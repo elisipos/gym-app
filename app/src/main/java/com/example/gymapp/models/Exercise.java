@@ -10,11 +10,7 @@ public class Exercise {
         this.name = name;
     }
 
-    public long getId() {
-        return id;
-    }
+    public long getId() {return id;}
 
-    public String getName() {
-        return name;
-    }
+    public String getName() {return name;}
 }

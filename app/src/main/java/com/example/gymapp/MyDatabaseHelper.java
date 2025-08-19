@@ -19,9 +19,10 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     // Table Info
     public static final String TABLE_SESSION = "Session";
-    public static final String COLUMN_SESSION_ID = "session_id";
+    public static final String COLUMN_SESSION_ID = "sessionId";
     public static final String TABLE_EXERCISE = "Exercise";
-    public static final String COLUMN_EXERCISE_ID = "exercise_id";
+    public static final String COLUMN_EXERCISE_ID = "exerciseId";
+    public static final String COLUMN_EXERCISE_ORDER = "exerciseOrder";
     public static final String COLUMN_REPS = "reps";
     public static final String COLUMN_WEIGHT = "weight";
     public static final String TABLE_SESSION_EXERCISE = "SessionExercise";

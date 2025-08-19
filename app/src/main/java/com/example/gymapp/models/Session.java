@@ -12,15 +12,8 @@ public class Session {
         this.name = name;
     }
 
-    public long getId() {
-        return id;
-    }
+    public long getId() {return id; }
+    public long getDate() {return date;}
 
-    public long getDate() {
-        return date;
-    }
-
-    public String getName() {
-        return name;
-    }
+    public String getName() {return name;}
 }

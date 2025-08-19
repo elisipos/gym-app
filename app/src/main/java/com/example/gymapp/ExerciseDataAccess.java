@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.gymapp.models.Exercise;
-import com.example.gymapp.models.Exercise;
-import com.example.gymapp.models.Exercise;
 
 import java.util.ArrayList;
 import java.util.List;
