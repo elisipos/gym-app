@@ -83,12 +83,16 @@ public class SessionDataAccess {
         String whereClause = "id = ?";
         String[] whereArgs = new String[]{ String.valueOf(id) };
 
-        return db.update("Session", values, whereClause, whereArgs);
+        int rows = db.update("Session", values, whereClause, whereArgs);
+
+        db.close();
+
+        return rows;
     }
 
     public int deleteSession(long sessionId) {
         String selection = "id = ?";
-        String[] selectionArgs = { String.valueOf(sessionId) };
+        String[] selectionArgs = new String[]{ String.valueOf(sessionId) };
 
         int deletedRows = db.delete("Session", selection, selectionArgs);
 

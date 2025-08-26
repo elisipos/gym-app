@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
 
 import java.util.ArrayList;
@@ -49,5 +50,57 @@ public class SessionExerciseDataAccess {
         db.close();
 
         return list;
+    }
+
+    public SessionExercise getSessionExerciseById(long esId){
+        SessionExercise sessionExercise = null;
+        String[] cols = new String[]{"id", "sessionId", "exerciseId", "exerciseOrder", "reps", "weight"};
+        String selection = "id = ?";
+        String[] selectionArgs = { String.valueOf(esId) };
+        Cursor cursor = db.query("SessionExercise", cols, selection, selectionArgs,
+                null, null, null);
+
+        if(cursor.moveToFirst()) {
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow("id"));
+            long sessionId = cursor.getLong(cursor.getColumnIndexOrThrow("sessionId"));
+            long exerciseId = cursor.getLong(cursor.getColumnIndexOrThrow("exerciseId"));
+            int exerciseOrder = cursor.getInt(cursor.getColumnIndexOrThrow("exerciseOrder"));
+            int reps = cursor.getInt(cursor.getColumnIndexOrThrow("reps"));
+            double weight = cursor.getDouble(cursor.getColumnIndexOrThrow("weight"));
+            sessionExercise = new SessionExercise(id, sessionId, exerciseId, exerciseOrder, reps, weight);
+        }
+        cursor.close();
+        db.close();
+
+        return sessionExercise;
+    }
+
+    public int updateSessionExercise(SessionExercise se) {
+        ContentValues values = new ContentValues();
+        values.put("sessionId", se.getSessionId());
+        values.put("exerciseId", se.getExerciseId());
+        values.put("exerciseOrder", se.getExerciseOrder());
+        values.put("reps", se.getReps());
+        values.put("weight", se.getWeight());
+
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{ String.valueOf(se.getId()) };
+
+        int rows = db.update("SessionExercise", values, whereClause, whereArgs);
+
+        db.close();
+
+        return rows;
+    }
+
+    public int deleteSessionExercise(long seId){
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{ String.valueOf(seId) };
+
+        int rowsDeleted = db.delete("SessionExercise", whereClause, whereArgs);
+
+        db.close();
+
+        return rowsDeleted;
     }
 }
