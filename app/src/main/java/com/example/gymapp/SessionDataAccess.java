@@ -26,7 +26,6 @@ public class SessionDataAccess {
         values.put("name", name);
 
         long id = db.insert("Session", null, values);
-        db.close();
 
         return id;
     }
@@ -45,7 +44,6 @@ public class SessionDataAccess {
             sessions.add(new Session(id, date, name));
         }
         cursor.close();
-        db.close();
 
         return sessions;
     }
@@ -66,7 +64,6 @@ public class SessionDataAccess {
             session = new Session(id, date, name);
         }
         cursor.close();
-        db.close();
 
         return session;
     }
@@ -85,8 +82,6 @@ public class SessionDataAccess {
 
         int rows = db.update("Session", values, whereClause, whereArgs);
 
-        db.close();
-
         return rows;
     }
 
@@ -95,8 +90,6 @@ public class SessionDataAccess {
         String[] selectionArgs = new String[]{ String.valueOf(sessionId) };
 
         int deletedRows = db.delete("Session", selection, selectionArgs);
-
-        db.close();
 
         return deletedRows;
     }

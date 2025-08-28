@@ -1,9 +1,14 @@
 package com.example.gymapp;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.Editable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -12,15 +17,20 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.gymapp.models.Session;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
     private MyDatabaseHelper dbHelper;
+
+    private SessionDataAccess sda;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +43,19 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        dbHelper = new MyDatabaseHelper(this);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        sda = new SessionDataAccess(db);
+
+
+
         FloatingActionButton newSessionBtn = findViewById(R.id.newSessionBtn);
+        ListView listView = findViewById(R.id.listViewElem);
+
+        List<Session> sessions = sda.getSessions();
+
+        SessionAdapter adapter = new SessionAdapter(this, sessions);
+        listView.setAdapter(adapter);
 
         newSessionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,12 +73,37 @@ public class MainActivity extends AppCompatActivity {
         EditText sessionDateInput = dialogView.findViewById(R.id.inputSessionDate);
 
         long nowMillis = System.currentTimeMillis();
-        String todayFormatted = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()).format(new Date(nowMillis));
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault());
+        String todayFormatted = sdf.format(new Date(nowMillis));
         sessionDateInput.setText(todayFormatted);
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(dialogView)
-                .setPositiveButton("OK", (d, i) -> { /* add functionality later */ })
+
+                .setPositiveButton("OK", (d, i) -> {
+                    long sessionDate = 0;
+                    try {
+                        sessionDate = Long.parseLong(
+                                String.valueOf(
+                                        sdf.parse(sessionDateInput.getText().toString()).getTime()
+                                )
+                        );
+                    } catch (ParseException e) {
+                        Log.e("MainActivity", "ParseException: "+e);
+                        Toast.makeText(this, "ParseException: "+e, Toast.LENGTH_LONG).show();
+                    }
+                    String sessionName = sessionNameInput.getText().toString();
+
+                    if(sessionName.isEmpty() || sessionName.isBlank()){
+                        Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
+                    }else if(sessionDate <= 0){
+                        Toast.makeText(this, "Date is not valid, MM-dd-yyyy", Toast.LENGTH_SHORT).show();
+                    }else{
+                        sda.addSession(sessionDate, sessionName);
+                        recreate();
+                    }
+                })
+
                 .setNegativeButton("Cancel", (d, i) -> d.dismiss())
                 .create();
 
