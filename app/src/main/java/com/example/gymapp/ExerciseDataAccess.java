@@ -26,7 +26,6 @@ public class ExerciseDataAccess {
         values.put("name", name);
 
         long id = db.insert("Exercise", null, values);
-        db.close();
 
         return id;
     }
@@ -44,7 +43,6 @@ public class ExerciseDataAccess {
             exercises.add(new Exercise(id, name));
         }
         cursor.close();
-        db.close();
 
         return exercises;
     }
@@ -64,7 +62,6 @@ public class ExerciseDataAccess {
             exercise = new Exercise(id, name);
         }
         cursor.close();
-        db.close();
 
         return exercise;
     }
@@ -87,8 +84,6 @@ public class ExerciseDataAccess {
         String[] selectionArgs = { String.valueOf(exerciseId) };
 
         int deletedRows = db.delete("Exercise", selection, selectionArgs);
-
-        db.close();
 
         return deletedRows;
     }
