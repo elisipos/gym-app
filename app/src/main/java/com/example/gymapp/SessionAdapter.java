@@ -12,11 +12,14 @@ import androidx.annotation.Nullable;
 
 import com.example.gymapp.models.Session;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class SessionAdapter extends ArrayAdapter<Session> {
     private Context context;
     private List<Session> sessions;
+
+    private SimpleDateFormat sdf;
 
     public SessionAdapter(Context context, List<Session> sessions) {
         super(context, 0, sessions);
@@ -40,7 +43,7 @@ public class SessionAdapter extends ArrayAdapter<Session> {
         TextView dateText = convertView.findViewById(R.id.sessionDateText);
 
         nameText.setText(session.getName());
-        dateText.setText(String.valueOf(session.getDate()));
+        dateText.setText(sdf.format(String.valueOf(session.getDate())));
 
         return convertView;
     }
