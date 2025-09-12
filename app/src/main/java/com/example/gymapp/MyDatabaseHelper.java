@@ -15,7 +15,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "gym-app-db.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Table Info
     public static final String TABLE_SESSION = "Session";
@@ -47,6 +47,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                     + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                     + COLUMN_SESSION_ID + " INTEGER NOT NULL, "
                     + COLUMN_EXERCISE_ID + " INTEGER NOT NULL, "
+                    + COLUMN_EXERCISE_ORDER + " INTEGER, "
                     + COLUMN_REPS + " INTEGER, "
                     + COLUMN_WEIGHT + " REAL, "
                     + "FOREIGN KEY(" + COLUMN_SESSION_ID + ")" + "REFERENCES " + TABLE_SESSION + "(" + COLUMN_ID + "), "

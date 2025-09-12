@@ -2,7 +2,6 @@ package com.example.gymapp;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +16,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.gymapp.adapters.SessionAdapter;
 import com.example.gymapp.models.Session;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         EditText sessionDateInput = dialogView.findViewById(R.id.inputSessionDate);
 
         long nowMillis = System.currentTimeMillis();
-        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
         String todayFormatted = sdf.format(new Date(nowMillis));
         sessionDateInput.setText(todayFormatted);
 
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     if(sessionName.isEmpty() || sessionName.isBlank()){
                         Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
                     }else if(sessionDate <= 0){
-                        Toast.makeText(this, "Date is not valid, MM-dd-yyyy", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Date is not valid, M-d-yyyy", Toast.LENGTH_SHORT).show();
                     }else{
                         sda.addSession(sessionDate, sessionName);
                         recreate();

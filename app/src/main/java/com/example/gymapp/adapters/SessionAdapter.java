@@ -1,6 +1,7 @@
-package com.example.gymapp;
+package com.example.gymapp.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +11,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.gymapp.R;
+import com.example.gymapp.SessionDetailsActivity;
 import com.example.gymapp.models.Session;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class SessionAdapter extends ArrayAdapter<Session> {
     private Context context;
@@ -42,8 +46,19 @@ public class SessionAdapter extends ArrayAdapter<Session> {
         TextView nameText = convertView.findViewById(R.id.sessionNameText);
         TextView dateText = convertView.findViewById(R.id.sessionDateText);
 
-        nameText.setText(session.getName());
-        dateText.setText(sdf.format(String.valueOf(session.getDate())));
+        sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
+
+        nameText.setText(String.valueOf(session.getName()));
+        dateText.setText(sdf.format(session.getDate()));
+
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, SessionDetailsActivity.class);
+                i.putExtra("session_id", session.getId());
+                context.startActivity(i);
+            }
+        });
 
         return convertView;
     }

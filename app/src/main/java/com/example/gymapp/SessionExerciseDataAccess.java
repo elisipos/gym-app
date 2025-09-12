@@ -24,10 +24,8 @@ public class SessionExerciseDataAccess {
         values.put("exerciseOrder", exerciseOrder);
         values.put("reps", reps);
         values.put("weight", weight);
-        long id = db.insert("SessionExercise", null, values);
 
-        db.close();
-        return id;
+        return db.insert("SessionExercise", null, values);
     }
 
     public List<SessionExercise> getSessionExercises() {
@@ -47,7 +45,6 @@ public class SessionExerciseDataAccess {
             list.add(new SessionExercise(id, sessionId, exerciseId, exerciseOrder, reps, weight));
         }
         cursor.close();
-        db.close();
 
         return list;
     }
@@ -70,9 +67,31 @@ public class SessionExerciseDataAccess {
             sessionExercise = new SessionExercise(id, sessionId, exerciseId, exerciseOrder, reps, weight);
         }
         cursor.close();
-        db.close();
 
         return sessionExercise;
+    }
+
+    public List<SessionExercise> getExercisesBySessionId(long sId) {
+        List<SessionExercise> list = new ArrayList<>();
+        String[] cols = new String[]{"id", "sessionId", "exerciseId", "exerciseOrder", "reps", "weight"};
+        String selection = "sessionId = ?";
+        String[] selectionArgs = {String.valueOf(sId)};
+
+        Cursor cursor = db.query("SessionExercise", cols, selection, selectionArgs,
+                null, null, "exerciseOrder ASC");
+
+        while(cursor.moveToNext()) {
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow("id"));
+            long sessionId = cursor.getLong(cursor.getColumnIndexOrThrow("sessionId"));
+            long exerciseId = cursor.getLong(cursor.getColumnIndexOrThrow("exerciseId"));
+            int exerciseOrder = cursor.getInt(cursor.getColumnIndexOrThrow("exerciseOrder"));
+            int reps = cursor.getInt(cursor.getColumnIndexOrThrow("reps"));
+            double weight = cursor.getDouble(cursor.getColumnIndexOrThrow("weight"));
+            list.add(new SessionExercise(id, sessionId, exerciseId, exerciseOrder, reps, weight));
+        }
+        cursor.close();
+
+        return list;
     }
 
     public int updateSessionExercise(SessionExercise se) {
@@ -86,21 +105,15 @@ public class SessionExerciseDataAccess {
         String whereClause = "id = ?";
         String[] whereArgs = new String[]{ String.valueOf(se.getId()) };
 
-        int rows = db.update("SessionExercise", values, whereClause, whereArgs);
 
-        db.close();
-
-        return rows;
+        return db.update("SessionExercise", values, whereClause, whereArgs);
     }
 
     public int deleteSessionExercise(long seId){
         String whereClause = "id = ?";
         String[] whereArgs = new String[]{ String.valueOf(seId) };
 
-        int rowsDeleted = db.delete("SessionExercise", whereClause, whereArgs);
 
-        db.close();
-
-        return rowsDeleted;
+        return db.delete("SessionExercise", whereClause, whereArgs);
     }
 }
