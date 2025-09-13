@@ -40,7 +40,7 @@
         app:layout_constraintTop_toBottomOf="@+id/sessionNameText" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/newExerciseBtn"
+        android:id="@+id/addExerciseBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"

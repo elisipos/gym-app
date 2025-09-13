@@ -20,9 +20,8 @@ public class ExerciseDataAccess {
     // Exercise Methods
     // ----------------
 
-    public long addExercise(long timestamp, String name) {
+    public long addExercise(String name) {
         ContentValues values = new ContentValues();
-        values.put("date", timestamp);
         values.put("name", name);
 
         long id = db.insert("Exercise", null, values);
