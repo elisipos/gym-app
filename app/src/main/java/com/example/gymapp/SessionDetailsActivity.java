@@ -69,7 +69,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
         if(sessionId != -1){
             Session session = sda.getSessionById(sessionId);
-            List<SessionExercise> exerciseList = seda.getExercisesBySessionId(sessionId);
+            List<SessionExercise> exerciseList = seda.getExercisesWithNamesBySessionId(sessionId);
 
             sessionNameText.setText(session.getName());
             sessionDateText.setText(sdf.format(session.getDate()));

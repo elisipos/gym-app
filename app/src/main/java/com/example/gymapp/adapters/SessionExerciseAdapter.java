@@ -48,7 +48,7 @@ public class SessionExerciseAdapter extends ArrayAdapter<SessionExercise> {
         TextView repsText = convertView.findViewById(R.id.textViewReps);
         TextView weightText = convertView.findViewById(R.id.textViewWeight);
 
-        nameText.setText();
+        nameText.setText(se.getName());
         repsText.setText(String.valueOf(se.getReps()));
         weightText.setText(String.valueOf(se.getWeight()));
 

@@ -7,6 +7,7 @@ public class SessionExercise {
     int exerciseOrder;
     int reps;
     double weight;
+    String name;
 
     public SessionExercise(long id, long sessionId, long exerciseId, int exerciseOrder, int reps, double weight) {
         this.id = id;
@@ -15,6 +16,16 @@ public class SessionExercise {
         this.exerciseOrder = exerciseOrder;
         this.reps = reps;
         this.weight = weight;
+    }
+
+    public SessionExercise(long id, long sessionId, long exerciseId, int exerciseOrder, int reps, double weight, String name) {
+        this.id = id;
+        this.sessionId = sessionId;
+        this.exerciseId = exerciseId;
+        this.exerciseOrder = exerciseOrder;
+        this.reps = reps;
+        this.weight = weight;
+        this.name = name;
     }
 
     public long getId() {return id;}
@@ -28,4 +39,6 @@ public class SessionExercise {
     public int getReps() {return reps;}
 
     public double getWeight() {return weight;}
+
+    public String getName() {return name;}
 }
