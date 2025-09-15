@@ -1,5 +1,6 @@
 package com.example.gymapp;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -17,6 +20,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.gymapp.adapters.SessionExerciseAdapter;
+import com.example.gymapp.models.Exercise;
 import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -34,8 +38,9 @@ public class SessionDetailsActivity extends AppCompatActivity {
     private ExerciseDataAccess eda;
     private SimpleDateFormat sdf;
     private SessionExerciseAdapter adapter;
+    private ActivityResultLauncher<Intent> addExerciseLauncher;
 
-    long sessionId;
+    private long sessionId;
 
 
     @Override
@@ -74,6 +79,19 @@ public class SessionDetailsActivity extends AppCompatActivity {
             listView.setAdapter(adapter);
         }
 
+        addExerciseLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if(result.getResultCode() == RESULT_OK) {
+                        Intent data = result.getData();
+                        if(data != null) {
+                            // Do thing with result.
+                            long exerciseId = result.getData().getLongExtra("exercise_id", -1);
+                            showAddExistingExerciseDialog(eda.getExerciseById(exerciseId));
+                        }
+                    }
+                }
+        );
 
         FloatingActionButton addExerciseBtn = findViewById(R.id.addExerciseBtn);
 
@@ -97,7 +115,8 @@ public class SessionDetailsActivity extends AppCompatActivity {
         Button btnCancel = sheetView.findViewById(R.id.btnCancel);
 
         btnExisting.setOnClickListener(v -> {
-            // Launch add existing flow
+            Intent intent = new Intent(this, ExerciseDetailsActivity.class);
+            addExerciseLauncher.launch(intent);
             bottomSheetDialog.dismiss();
         });
 
@@ -167,6 +186,57 @@ public class SessionDetailsActivity extends AppCompatActivity {
                         Double.parseDouble(inputWeightStr)
                 );
                 Toast.makeText(this, "Successfully added '" + inputNameStr + "'.", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                recreate();
+            }
+        });
+    }
+
+    private void showAddExistingExerciseDialog(Exercise exercise) {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_existing_exercise, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogView)
+                .setPositiveButton("OK", null)
+                .setNegativeButton("Cancel", (d, w) -> d.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        EditText inputName = dialogView.findViewById(R.id.inputExerciseName);
+        EditText inputReps = dialogView.findViewById(R.id.inputReps);
+        EditText inputWeight = dialogView.findViewById(R.id.inputWeight);
+
+        inputName.setHint(exercise.getName());
+
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+        /*                  */
+        /* INPUT VALIDATION */
+        /*                  */
+
+        positiveButton.setOnClickListener(v -> {
+            String inputRepsStr = inputReps.getText().toString();
+            String inputWeightStr = inputWeight.getText().toString();
+
+            if(!validateStringInput(inputRepsStr) || Integer.parseInt(inputRepsStr) == 0){
+                //FAIL
+                inputReps.setError("Reps cannot be 0 or empty.");
+            }else
+            if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
+                //FAIL
+                inputWeight.setError("Weight cannot be <= 0 or empty.");
+            }else{
+                int newExerciseOrder;
+                List<SessionExercise> exerciseList = seda.getExercisesBySessionId(sessionId);
+                newExerciseOrder = exerciseList.size() + 1;
+                seda.addSessionExercise(
+                        sessionId,
+                        exercise.getId(),
+                        newExerciseOrder,
+                        Integer.parseInt(inputRepsStr),
+                        Double.parseDouble(inputWeightStr)
+                );
                 dialog.dismiss();
                 recreate();
             }

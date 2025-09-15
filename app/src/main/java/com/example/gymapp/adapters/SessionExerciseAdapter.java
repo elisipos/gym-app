@@ -30,7 +30,7 @@ public class SessionExerciseAdapter extends ArrayAdapter<SessionExercise> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         // Reuse old view if possible
         if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_exercise, parent, false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_session_exercise, parent, false);
         }
 
         // Get the current Session

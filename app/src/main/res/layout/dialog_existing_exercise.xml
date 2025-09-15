@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@android:color/white">
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="12dp"
+        android:text="Add Existing Exercise"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/txtViewName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Name" />
+
+    <EditText
+        android:id="@+id/inputExerciseName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:cursorVisible="false"
+        android:editable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:hint="ExerciseName"
+        android:inputType="none" />
+
+    <TextView
+        android:id="@+id/txtViewReps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reps" />
+
+    <EditText
+        android:id="@+id/inputReps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="8..."
+        android:inputType="number" />
+
+    <TextView
+        android:id="@+id/txtViewWeight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Weight" />
+
+    <EditText
+        android:id="@+id/inputWeight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="225..."
+        android:inputType="numberDecimal" />
+
+    <!-- Optional: custom buttons inside the layout -->
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:gravity="end"-->
+<!--        android:layout_marginTop="16dp">-->
+
+<!--        <Button-->
+<!--            android:id="@+id/btnCancelExercise"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Cancel"/>-->
+
+<!--        <Button-->
+<!--            android:id="@+id/btnSaveExercise"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Save"-->
+<!--            android:layout_marginStart="12dp"/>-->
+<!--    </LinearLayout>-->
+</LinearLayout>
