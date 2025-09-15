@@ -10,7 +10,7 @@
 
     <TextView
         android:id="@+id/textViewExerciseName"
-        android:layout_width="251dp"
+        android:layout_width="224dp"
         android:layout_height="23dp"
         android:layout_marginStart="4dp"
         android:ellipsize="end"
@@ -27,11 +27,12 @@
         android:id="@+id/textViewReps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="80dp"
         android:text="10 reps"
+        android:textAlignment="viewStart"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textViewWeight"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -39,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
-        android:text="100 kg"
+        android:text="100lbs"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

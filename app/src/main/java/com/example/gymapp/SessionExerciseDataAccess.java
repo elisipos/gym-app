@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
 
 import java.util.ArrayList;

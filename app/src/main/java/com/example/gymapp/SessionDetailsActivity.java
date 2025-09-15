@@ -2,8 +2,6 @@ package com.example.gymapp;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,9 +16,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.gymapp.adapters.ExerciseAdapter;
 import com.example.gymapp.adapters.SessionExerciseAdapter;
-import com.example.gymapp.models.Exercise;
 import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -170,27 +166,10 @@ public class SessionDetailsActivity extends AppCompatActivity {
                         Integer.parseInt(inputRepsStr),
                         Double.parseDouble(inputWeightStr)
                 );
-                Toast.makeText(this, "Successfully added exercise '" + inputNameStr + "'.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Successfully added '" + inputNameStr + "'.", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
+                recreate();
             }
         });
-
-// Grab handles
-
-//        Button btnSave = dialogView.findViewById(R.id.btnSaveExercise);
-//        Button btnCancel = dialogView.findViewById(R.id.btnCancelExercise);
-//
-//        btnSave.setOnClickListener(v -> {
-//            String exerciseName = input.getText().toString().trim();
-//            if (!exerciseName.isEmpty()) {
-//                // Save to DB, etc.
-//                dialog.dismiss();
-//            } else {
-//                input.setError("Enter a name");
-//            }
-//        });
-//
-//        btnCancel.setOnClickListener(v -> dialog.dismiss());
-
     }
 }
