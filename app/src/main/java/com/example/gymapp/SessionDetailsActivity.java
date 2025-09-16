@@ -145,6 +145,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
     private void removeExercise(SessionExercise exercise) {
+        // TODO: Refresh exercise order of all exercises in the list after removing an exercise.
         Toast.makeText(this, "Rows affected: " + String.valueOf(seda.deleteSessionExercise(exercise.getId())), Toast.LENGTH_SHORT).show();
         recreate();
     }
