@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -51,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton newSessionBtn = findViewById(R.id.newSessionBtn);
         ListView listView = findViewById(R.id.listViewElem);
+        TextView welcomeView = findViewById(R.id.welcomeTxt);
+
+        welcomeView.setText("Welcome (MainActivity)");
 
         List<Session> sessions = sda.getSessions();
 

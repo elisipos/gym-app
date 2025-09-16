@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,6 +40,9 @@ public class ExerciseDetailsActivity extends AppCompatActivity {
         eda = new ExerciseDataAccess(db);
 
         ListView listView = findViewById(R.id.listViewElem);
+        TextView titleView = findViewById(R.id.textViewExercises);
+
+        titleView.setText("Existing Exercises (ExerciseDetails)");
 
         List<Exercise> exerciseList = eda.getExercises();
 
