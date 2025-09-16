@@ -93,6 +93,29 @@ public class SessionExerciseDataAccess {
         return list;
     }
 
+    public SessionExercise getSessionExerciseByBothIds(long sId, long eId) {
+        SessionExercise se = null;
+        String[] cols = {"id", "sessionId", "exerciseId", "exerciseOrder", "reps", "weight"};
+        String selection = "sessionId = ?, exerciseId = ?";
+        String[] selectionArgs = {String.valueOf(sId), String.valueOf(eId)};
+
+        Cursor cursor = db.query("SessionExercise", cols, selection, selectionArgs,
+                null, null, null);
+
+        while(cursor.moveToNext()) {
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow("id"));
+            long sessionId = cursor.getLong(cursor.getColumnIndexOrThrow("sessionId"));
+            long exerciseId = cursor.getLong(cursor.getColumnIndexOrThrow("exerciseId"));
+            int exerciseOrder = cursor.getInt(cursor.getColumnIndexOrThrow("exerciseOrder"));
+            int reps = cursor.getInt(cursor.getColumnIndexOrThrow("reps"));
+            double weight = cursor.getDouble(cursor.getColumnIndexOrThrow("weight"));
+            se = new SessionExercise(id, sessionId, exerciseId, exerciseOrder, reps, weight);
+        }
+        cursor.close();
+
+        return se;
+    }
+
     public List<SessionExercise> getExercisesWithNamesBySessionId(long sId) {
         List<SessionExercise> list = new ArrayList<>();
 

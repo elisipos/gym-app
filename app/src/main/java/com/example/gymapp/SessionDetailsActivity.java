@@ -3,16 +3,20 @@ package com.example.gymapp;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -39,6 +43,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
     private SimpleDateFormat sdf;
     private SessionExerciseAdapter adapter;
     private ActivityResultLauncher<Intent> addExerciseLauncher;
+    List<SessionExercise> exerciseList;
 
     private long sessionId;
 
@@ -70,13 +75,21 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
         if(sessionId != -1){
             Session session = sda.getSessionById(sessionId);
-            List<SessionExercise> exerciseList = seda.getExercisesWithNamesBySessionId(sessionId);
+            exerciseList = seda.getExercisesWithNamesBySessionId(sessionId);
 
             sessionNameText.setText(session.getName() + " (SessionDetails)");
             sessionDateText.setText(sdf.format(session.getDate()));
 
             adapter = new SessionExerciseAdapter(this, exerciseList);
             listView.setAdapter(adapter);
+
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    showPopupMenu(view, position);
+                    return true;
+                }
+            });
         }
 
         addExerciseLauncher = registerForActivityResult(
@@ -101,6 +114,40 @@ public class SessionDetailsActivity extends AppCompatActivity {
                 showExerciseChoiceDialog();
             }
         });
+    }
+
+    private void showPopupMenu(View anchorView, int position) {
+        PopupMenu popup = new PopupMenu(this, anchorView);
+        popup.getMenuInflater().inflate(R.menu.exercise_options_menu, popup.getMenu());
+
+        popup.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            SessionExercise selected = exerciseList.get(position);
+
+            if(itemId == R.id.action_edit) {
+                //EDIT
+                editExercise(selected);
+                return true;
+            }else if(itemId == R.id.action_delete) {
+                //REMOVE
+                removeExercise(selected);
+                return true;
+            }
+            return false;
+        });
+
+        popup.setGravity(Gravity.END);
+        popup.show();
+    }
+
+    private void editExercise(SessionExercise exercise) {
+        Toast.makeText(this, "Editing " + exercise.getName(), Toast.LENGTH_SHORT).show();
+        showUpdateExistingExerciseDialog(exercise);
+    }
+
+    private void removeExercise(SessionExercise exercise) {
+        Toast.makeText(this, "Removing " + exercise.getName(), Toast.LENGTH_SHORT).show();
+
     }
 
     private void showExerciseChoiceDialog() {
@@ -237,6 +284,63 @@ public class SessionDetailsActivity extends AppCompatActivity {
                         Integer.parseInt(inputRepsStr),
                         Double.parseDouble(inputWeightStr)
                 );
+                dialog.dismiss();
+                recreate();
+            }
+        });
+    }
+
+    private void showUpdateExistingExerciseDialog(SessionExercise e) {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_existing_exercise, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogView)
+                .setPositiveButton("OK", null)
+                .setNegativeButton("Cancel", (d, w) -> d.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        EditText inputName = dialogView.findViewById(R.id.inputExerciseName);
+        EditText inputReps = dialogView.findViewById(R.id.inputReps);
+        EditText inputWeight = dialogView.findViewById(R.id.inputWeight);
+
+        inputName.setHint(e.getName());
+        inputReps.setText(String.valueOf(e.getReps()));
+        inputWeight.setText(String.valueOf(e.getWeight()));
+
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+        /*                  */
+        /* INPUT VALIDATION */
+        /*                  */
+
+        positiveButton.setOnClickListener(v -> {
+            String inputRepsStr = inputReps.getText().toString();
+            String inputWeightStr = inputWeight.getText().toString();
+
+            if(!validateStringInput(inputRepsStr) || Integer.parseInt(inputRepsStr) == 0){
+                //FAIL
+                inputReps.setError("Reps cannot be 0 or empty.");
+                Toast.makeText(this, "Reps cannot be 0 or empty.", Toast.LENGTH_SHORT).show();
+            }else
+            if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
+                //FAIL
+                inputWeight.setError("Weight cannot be <= 0 or empty.");
+                Toast.makeText(this, "Weight cannot be <= 0 or empty.", Toast.LENGTH_SHORT).show();
+            }else{
+                int newReps = Integer.parseInt(inputRepsStr);
+                double newWeight = Double.parseDouble(inputWeightStr);
+
+                SessionExercise update = new SessionExercise(
+                        e.getId(),
+                        e.getSessionId(),
+                        e.getExerciseId(),
+                        e.getExerciseOrder(),
+                        newReps,
+                        newWeight
+                );
+                Toast.makeText(this, String.valueOf(seda.updateSessionExercise(update)), Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
                 recreate();
             }
