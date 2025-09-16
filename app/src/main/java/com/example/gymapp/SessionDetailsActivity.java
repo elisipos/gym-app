@@ -141,13 +141,12 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
     private void editExercise(SessionExercise exercise) {
-        Toast.makeText(this, "Editing " + exercise.getName(), Toast.LENGTH_SHORT).show();
         showUpdateExistingExerciseDialog(exercise);
     }
 
     private void removeExercise(SessionExercise exercise) {
-        Toast.makeText(this, "Removing " + exercise.getName(), Toast.LENGTH_SHORT).show();
-
+        Toast.makeText(this, "Rows affected: " + String.valueOf(seda.deleteSessionExercise(exercise.getId())), Toast.LENGTH_SHORT).show();
+        recreate();
     }
 
     private void showExerciseChoiceDialog() {
@@ -322,12 +321,10 @@ public class SessionDetailsActivity extends AppCompatActivity {
             if(!validateStringInput(inputRepsStr) || Integer.parseInt(inputRepsStr) == 0){
                 //FAIL
                 inputReps.setError("Reps cannot be 0 or empty.");
-                Toast.makeText(this, "Reps cannot be 0 or empty.", Toast.LENGTH_SHORT).show();
             }else
             if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
                 //FAIL
                 inputWeight.setError("Weight cannot be <= 0 or empty.");
-                Toast.makeText(this, "Weight cannot be <= 0 or empty.", Toast.LENGTH_SHORT).show();
             }else{
                 int newReps = Integer.parseInt(inputRepsStr);
                 double newWeight = Double.parseDouble(inputWeightStr);
