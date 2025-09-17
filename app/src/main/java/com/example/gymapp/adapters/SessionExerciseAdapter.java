@@ -1,15 +1,19 @@
 package com.example.gymapp.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gymapp.R;
@@ -23,11 +27,16 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
     private Context context;
     private List<SessionExercise> sessionExerciseList;
     private DecimalFormat df;
+    private ItemTouchHelper itemTouchHelper;
 
     public SessionExerciseAdapter(Context context, List<SessionExercise> sessionExerciseList) {
 //        super(context, 0, sessionExercises);
 //        this.context = context;
         this.sessionExerciseList = sessionExerciseList;
+    }
+
+    public void setItemTouchHelper(ItemTouchHelper helper) {
+        this.itemTouchHelper = helper;
     }
 
     @NonNull
@@ -38,12 +47,23 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
         return new ExerciseViewHolder(view);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull ExerciseViewHolder holder, int position) {
         SessionExercise exercise = sessionExerciseList.get(position);
-        holder.nameText.setText(exercise.getName());
-        holder.repsText.setText(String.valueOf(exercise.getReps()));
-        holder.weightText.setText(String.valueOf(exercise.getWeight()));
+        df = new DecimalFormat("#.##");
+        holder.nameText.setText(exercise.getName() + ", " + exercise.getExerciseOrder());
+        holder.repsText.setText(exercise.getReps() + " reps");
+        holder.weightText.setText(df.format(exercise.getWeight()) + " lbs");
+
+        holder.dragHandle.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (itemTouchHelper != null) {
+                    itemTouchHelper.startDrag(holder);
+                }
+            }
+            return false;
+        });
     }
 
     @Override
@@ -55,13 +75,16 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
         Collections.swap(sessionExerciseList, fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
     }
+
     static class ExerciseViewHolder extends RecyclerView.ViewHolder {
         TextView nameText, repsText, weightText;
+        ImageView dragHandle;
         ExerciseViewHolder(View itemView) {
             super(itemView);
             nameText = itemView.findViewById(R.id.textViewExerciseName);
             repsText = itemView.findViewById(R.id.textViewReps);
             weightText = itemView.findViewById(R.id.textViewWeight);
+            dragHandle = itemView.findViewById(R.id.dragHandle);
         }
     }
 
@@ -79,7 +102,7 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
 //        TextView repsText = convertView.findViewById(R.id.textViewReps);
 //        TextView weightText = convertView.findViewById(R.id.textViewWeight);
 //
-//        df = new DecimalFormat("#.##");
+
 //
 //        nameText.setText(se.getName() + ", " + se.getExerciseOrder());
 //        repsText.setText(se.getReps() + " reps");

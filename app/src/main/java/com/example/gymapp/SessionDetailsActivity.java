@@ -16,12 +16,14 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +35,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -85,6 +88,37 @@ public class SessionDetailsActivity extends AppCompatActivity {
             adapter = new SessionExerciseAdapter(this, exerciseList);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
             recyclerView.setAdapter(adapter);
+
+            ItemTouchHelper.SimpleCallback callback =
+                new ItemTouchHelper.SimpleCallback(
+                        ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView,
+                                          @NonNull RecyclerView.ViewHolder viewHolder,
+                                          @NonNull RecyclerView.ViewHolder target) {
+                        int fromPos = viewHolder.getAdapterPosition();
+                        int toPos = target.getAdapterPosition();
+
+                        Collections.swap(exerciseList, fromPos, toPos);
+                        adapter.notifyItemMoved(fromPos, toPos);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isLongPressDragEnabled() {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                        // we’re not doing swipes here
+                    }
+                };
+
+            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+            itemTouchHelper.attachToRecyclerView(recyclerView);
+            adapter.setItemTouchHelper(itemTouchHelper);
 
 //            recyclerView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 //                @Override

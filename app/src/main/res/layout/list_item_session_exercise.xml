@@ -10,7 +10,7 @@
 
     <TextView
         android:id="@+id/textViewExerciseName"
-        android:layout_width="224dp"
+        android:layout_width="178dp"
         android:layout_height="23dp"
         android:layout_marginStart="4dp"
         android:ellipsize="end"
@@ -27,7 +27,7 @@
         android:id="@+id/textViewReps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="80dp"
+        android:layout_marginEnd="124dp"
         android:text="10 reps"
         android:textAlignment="viewStart"
         android:textSize="14sp"
@@ -39,11 +39,26 @@
         android:id="@+id/textViewWeight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
+        android:layout_marginEnd="52dp"
         android:text="100lbs"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.571" />
+
+    <ImageView
+        android:id="@+id/dragHandle"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="4dp"
+        android:padding="8dp"
+        android:scaleX="2.5"
+        android:scaleY="2.5"
+        android:src="@drawable/ic_drag_handle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
