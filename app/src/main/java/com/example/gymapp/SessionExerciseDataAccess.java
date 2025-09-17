@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
 
 import java.util.ArrayList;
@@ -91,6 +92,21 @@ public class SessionExerciseDataAccess {
         cursor.close();
 
         return list;
+    }
+
+    public void fixExerciseOrders(List<SessionExercise> exerciseList) {
+        for(int i = 0; i < exerciseList.size(); i++) {
+            SessionExercise position = exerciseList.get(i);
+            SessionExercise reorderedSe = new SessionExercise(
+                    position.getId(),
+                    position.getSessionId(),
+                    position.getExerciseId(),
+                    i + 1,
+                    position.getReps(),
+                    position.getWeight()
+            );
+            updateSessionExercise(reorderedSe);
+        }
     }
 
     public SessionExercise getSessionExerciseByBothIds(long sId, long eId) {

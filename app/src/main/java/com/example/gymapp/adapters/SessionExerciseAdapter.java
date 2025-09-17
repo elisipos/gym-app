@@ -10,43 +10,80 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gymapp.R;
 import com.example.gymapp.models.SessionExercise;
 
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.List;
 
-public class SessionExerciseAdapter extends ArrayAdapter<SessionExercise> {
+public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExerciseAdapter.ExerciseViewHolder> {
     private Context context;
-    private List<SessionExercise> sessionExercises;
+    private List<SessionExercise> sessionExerciseList;
     private DecimalFormat df;
 
-    public SessionExerciseAdapter(Context context, List<SessionExercise> sessionExercises) {
-        super(context, 0, sessionExercises);
-        this.context = context;
-        this.sessionExercises = sessionExercises;
+    public SessionExerciseAdapter(Context context, List<SessionExercise> sessionExerciseList) {
+//        super(context, 0, sessionExercises);
+//        this.context = context;
+        this.sessionExerciseList = sessionExerciseList;
     }
 
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // Reuse old view if possible
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_session_exercise, parent, false);
+    @NonNull
+    @Override
+    public ExerciseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item_session_exercise, parent, false);
+        return new ExerciseViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ExerciseViewHolder holder, int position) {
+        SessionExercise exercise = sessionExerciseList.get(position);
+        holder.nameText.setText(exercise.getName());
+        holder.repsText.setText(String.valueOf(exercise.getReps()));
+        holder.weightText.setText(String.valueOf(exercise.getWeight()));
+    }
+
+    @Override
+    public int getItemCount() {
+        return sessionExerciseList.size();
+    }
+
+    public void onItemMove(int fromPosition, int toPosition) {
+        Collections.swap(sessionExerciseList, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+    }
+    static class ExerciseViewHolder extends RecyclerView.ViewHolder {
+        TextView nameText, repsText, weightText;
+        ExerciseViewHolder(View itemView) {
+            super(itemView);
+            nameText = itemView.findViewById(R.id.textViewExerciseName);
+            repsText = itemView.findViewById(R.id.textViewReps);
+            weightText = itemView.findViewById(R.id.textViewWeight);
         }
+    }
 
-        // Get the current Session
-        SessionExercise se = sessionExercises.get(position);
-
-        // Bind data
-        TextView nameText = convertView.findViewById(R.id.textViewExerciseName);
-        TextView repsText = convertView.findViewById(R.id.textViewReps);
-        TextView weightText = convertView.findViewById(R.id.textViewWeight);
-
-        df = new DecimalFormat("#.##");
-
-        nameText.setText(se.getName());
-        repsText.setText(se.getReps() + " reps");
-        weightText.setText(df.format(se.getWeight())  + " lbs");
+//    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+//        // Reuse old view if possible
+//        if (convertView == null) {
+//            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_session_exercise, parent, false);
+//        }
+//
+//        // Get the current Session
+//        SessionExercise se = sessionExercises.get(position);
+//
+//        // Bind data
+//        TextView nameText = convertView.findViewById(R.id.textViewExerciseName);
+//        TextView repsText = convertView.findViewById(R.id.textViewReps);
+//        TextView weightText = convertView.findViewById(R.id.textViewWeight);
+//
+//        df = new DecimalFormat("#.##");
+//
+//        nameText.setText(se.getName() + ", " + se.getExerciseOrder());
+//        repsText.setText(se.getReps() + " reps");
+//        weightText.setText(df.format(se.getWeight())  + " lbs");
 
 //        convertView.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -57,6 +94,6 @@ public class SessionExerciseAdapter extends ArrayAdapter<SessionExercise> {
 //            }
 //        });
 
-        return convertView;
-    }
+//        return convertView;
+//    }
 }

@@ -22,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gymapp.adapters.SessionExerciseAdapter;
 import com.example.gymapp.models.Exercise;
@@ -69,7 +71,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
         TextView sessionNameText = findViewById(R.id.sessionNameText);
         TextView sessionDateText = findViewById(R.id.sessionDateText);
 
-        ListView listView = findViewById(R.id.sessionListView);
+        RecyclerView recyclerView = findViewById(R.id.sessionRecyclerView);
 
         sessionId = getIntent().getLongExtra("session_id", -1);
 
@@ -81,15 +83,16 @@ public class SessionDetailsActivity extends AppCompatActivity {
             sessionDateText.setText(sdf.format(session.getDate()));
 
             adapter = new SessionExerciseAdapter(this, exerciseList);
-            listView.setAdapter(adapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            recyclerView.setAdapter(adapter);
 
-            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    showPopupMenu(view, position);
-                    return true;
-                }
-            });
+//            recyclerView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//                @Override
+//                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//                    showPopupMenu(view, position);
+//                    return true;
+//                }
+//            });
         }
 
         addExerciseLauncher = registerForActivityResult(
@@ -147,6 +150,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
     private void removeExercise(SessionExercise exercise) {
         // TODO: Refresh exercise order of all exercises in the list after removing an exercise.
         Toast.makeText(this, "Rows affected: " + String.valueOf(seda.deleteSessionExercise(exercise.getId())), Toast.LENGTH_SHORT).show();
+        seda.fixExerciseOrders(seda.getExercisesBySessionId(sessionId));
         recreate();
     }
 
