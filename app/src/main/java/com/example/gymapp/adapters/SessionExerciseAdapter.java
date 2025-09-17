@@ -3,11 +3,13 @@ package com.example.gymapp.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +30,7 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
     private List<SessionExercise> sessionExerciseList;
     private DecimalFormat df;
     private ItemTouchHelper itemTouchHelper;
+    private OnExerciseLongClickListener longClickListener;
 
     public SessionExerciseAdapter(Context context, List<SessionExercise> sessionExerciseList) {
 //        super(context, 0, sessionExercises);
@@ -50,12 +53,16 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull ExerciseViewHolder holder, int position) {
+
+        // Formatting //
         SessionExercise exercise = sessionExerciseList.get(position);
         df = new DecimalFormat("#.##");
         holder.nameText.setText(exercise.getName() + ", " + exercise.getExerciseOrder());
         holder.repsText.setText(exercise.getReps() + " reps");
         holder.weightText.setText(df.format(exercise.getWeight()) + " lbs");
+        // End Formatting //
 
+        // Defining Touch Events //
         holder.dragHandle.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 if (itemTouchHelper != null) {
@@ -64,6 +71,17 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
             }
             return false;
         });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if(longClickListener != null) {
+                    longClickListener.onExerciseLongClick(v, holder.getAdapterPosition());
+                }
+                return true;
+            }
+        });
+        // End Touch Events //
     }
 
     @Override
@@ -88,35 +106,13 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
         }
     }
 
-//    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-//        // Reuse old view if possible
-//        if (convertView == null) {
-//            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_session_exercise, parent, false);
-//        }
-//
-//        // Get the current Session
-//        SessionExercise se = sessionExercises.get(position);
-//
-//        // Bind data
-//        TextView nameText = convertView.findViewById(R.id.textViewExerciseName);
-//        TextView repsText = convertView.findViewById(R.id.textViewReps);
-//        TextView weightText = convertView.findViewById(R.id.textViewWeight);
-//
+    public interface OnExerciseLongClickListener {
+        void onExerciseLongClick(View view, int position);
+    }
 
-//
-//        nameText.setText(se.getName() + ", " + se.getExerciseOrder());
-//        repsText.setText(se.getReps() + " reps");
-//        weightText.setText(df.format(se.getWeight())  + " lbs");
-
-//        convertView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent i = new Intent(context, SessionDetailsActivity.class);
-//                i.putExtra("session_id", session.getId());
-//                context.startActivity(i);
-//            }
-//        });
-
-//        return convertView;
-//    }
+    public void setOnExerciseLongClickListener(OnExerciseLongClickListener listener) {
+        this.longClickListener = listener;
+    }
 }
+
+

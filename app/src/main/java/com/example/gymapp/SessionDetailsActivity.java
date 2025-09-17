@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.gymapp.adapters.ExerciseAdapter;
 import com.example.gymapp.adapters.SessionExerciseAdapter;
 import com.example.gymapp.models.Exercise;
 import com.example.gymapp.models.Session;
@@ -101,6 +102,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
                         int toPos = target.getAdapterPosition();
 
                         Collections.swap(exerciseList, fromPos, toPos);
+                        seda.fixExerciseOrders(exerciseList);
                         adapter.notifyItemMoved(fromPos, toPos);
                         return true;
                     }
@@ -114,19 +116,19 @@ public class SessionDetailsActivity extends AppCompatActivity {
                     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                         // we’re not doing swipes here
                     }
+
+
                 };
 
             ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
             itemTouchHelper.attachToRecyclerView(recyclerView);
             adapter.setItemTouchHelper(itemTouchHelper);
-
-//            recyclerView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//                @Override
-//                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//                    showPopupMenu(view, position);
-//                    return true;
-//                }
-//            });
+            adapter.setOnExerciseLongClickListener(new SessionExerciseAdapter.OnExerciseLongClickListener() {
+                @Override
+                public void onExerciseLongClick(View view, int position) {
+                    showPopupMenu(view, position);
+                }
+            });
         }
 
         addExerciseLauncher = registerForActivityResult(
