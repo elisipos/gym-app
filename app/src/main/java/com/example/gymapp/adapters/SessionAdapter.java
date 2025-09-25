@@ -2,10 +2,12 @@ package com.example.gymapp.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.example.gymapp.R;
 import com.example.gymapp.SessionDetailsActivity;
 import com.example.gymapp.models.Session;
+import com.example.gymapp.models.SessionExercise;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -50,6 +53,8 @@ public class SessionAdapter extends ArrayAdapter<Session> {
 
         nameText.setText(String.valueOf(session.getName()));
         dateText.setText(sdf.format(session.getDate()));
+
+        convertView.setLongClickable(true);
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override

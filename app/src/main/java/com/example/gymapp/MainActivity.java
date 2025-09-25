@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.gymapp.adapters.SessionAdapter;
 import com.example.gymapp.models.Session;
+import com.example.gymapp.models.SessionExercise;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.ParseException;
@@ -60,6 +62,14 @@ public class MainActivity extends AppCompatActivity {
 
         SessionAdapter adapter = new SessionAdapter(this, sessions);
         listView.setAdapter(adapter);
+
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+            Session clickedSession = (Session) parent.getItemAtPosition(position);
+            showExerciseOptionsPopup(view, clickedSession);
+            return true;
+        });
+
+
 
         newSessionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,5 +122,24 @@ public class MainActivity extends AppCompatActivity {
                 .create();
 
         dialog.show();
+    }
+
+    private void showExerciseOptionsPopup(View anchor, Session session) {
+        PopupMenu popup = new PopupMenu(this, anchor);
+        popup.getMenuInflater().inflate(R.menu.exercise_options_menu, popup.getMenu());
+
+        popup.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.action_edit) {
+                // handle edit
+                return true;
+            } else if (itemId == R.id.action_delete) {
+                // handle remove
+                return true;
+            }
+            return false;
+        });
+
+        popup.show();
     }
 }
