@@ -20,7 +20,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.gymapp.adapters.SessionAdapter;
 import com.example.gymapp.models.Session;
-import com.example.gymapp.models.SessionExercise;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.ParseException;
@@ -34,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private MyDatabaseHelper dbHelper;
 
     private SessionDataAccess sda;
+    private EditDialogHelper editDialogHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         sda = new SessionDataAccess(db);
 
-
+        editDialogHelper = new EditDialogHelper(this, null, null, sda, () -> recreate());
 
         FloatingActionButton newSessionBtn = findViewById(R.id.newSessionBtn);
         ListView listView = findViewById(R.id.listViewElem);
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         listView.setOnItemLongClickListener((parent, view, position, id) -> {
             Session clickedSession = (Session) parent.getItemAtPosition(position);
-            showExerciseOptionsPopup(view, clickedSession);
+            showSessionOptionsPopup(view, clickedSession);
             return true;
         });
 
@@ -124,17 +124,20 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void showExerciseOptionsPopup(View anchor, Session session) {
+    private void showSessionOptionsPopup(View anchor, Session session) {
         PopupMenu popup = new PopupMenu(this, anchor);
-        popup.getMenuInflater().inflate(R.menu.exercise_options_menu, popup.getMenu());
+        popup.getMenuInflater().inflate(R.menu.list_item_options_menu, popup.getMenu());
 
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.action_edit) {
-                // handle edit 
+                // handle edit
+                editDialogHelper.showEditDialog(session);
                 return true;
             } else if (itemId == R.id.action_delete) {
                 // handle remove
+                sda.deleteSession(session.getId());
+                recreate();
                 return true;
             }
             return false;

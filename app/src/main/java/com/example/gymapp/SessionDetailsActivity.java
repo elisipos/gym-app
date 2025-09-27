@@ -5,10 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,8 +14,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -27,9 +22,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.gymapp.adapters.ExerciseAdapter;
 import com.example.gymapp.adapters.SessionExerciseAdapter;
-import com.example.gymapp.models.Exercise;
 import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -160,7 +153,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
     private void showPopupMenu(View anchorView, int position) {
         PopupMenu popup = new PopupMenu(this, anchorView);
-        popup.getMenuInflater().inflate(R.menu.exercise_options_menu, popup.getMenu());
+        popup.getMenuInflater().inflate(R.menu.list_item_options_menu, popup.getMenu());
 
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
@@ -187,7 +180,6 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
     private void removeExercise(SessionExercise exercise) {
-        Toast.makeText(this, "Rows affected: " + String.valueOf(seda.deleteSessionExercise(exercise.getId())), Toast.LENGTH_SHORT).show();
         seda.fixExerciseOrders(seda.getExercisesBySessionId(sessionId));
         recreate();
     }
