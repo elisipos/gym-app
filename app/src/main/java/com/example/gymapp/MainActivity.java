@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.action_edit) {
-                // handle edit
+                // handle edit 
                 return true;
             } else if (itemId == R.id.action_delete) {
                 // handle remove

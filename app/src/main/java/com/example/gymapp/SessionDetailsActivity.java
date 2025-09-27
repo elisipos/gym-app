@@ -50,6 +50,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
     private SessionExerciseAdapter adapter;
     private ActivityResultLauncher<Intent> addExerciseLauncher;
     List<SessionExercise> exerciseList;
+    private EditDialogHelper editDialogHelper;
 
     private long sessionId;
 
@@ -71,6 +72,8 @@ public class SessionDetailsActivity extends AppCompatActivity {
         seda = new SessionExerciseDataAccess(db);
         eda = new ExerciseDataAccess(db);
         sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
+
+        editDialogHelper = new EditDialogHelper(this, seda, eda, sda, () -> recreate());
 
         TextView sessionNameText = findViewById(R.id.sessionNameText);
         TextView sessionDateText = findViewById(R.id.sessionDateText);
@@ -139,7 +142,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
                         if(data != null) {
                             // Do thing with result.
                             long exerciseId = result.getData().getLongExtra("exercise_id", -1);
-                            showAddExistingExerciseDialog(eda.getExerciseById(exerciseId));
+                            editDialogHelper.showEditDialog(eda.getExerciseById(exerciseId), exerciseId);
                         }
                     }
                 }
@@ -179,12 +182,11 @@ public class SessionDetailsActivity extends AppCompatActivity {
         popup.show();
     }
 
-    private void editExercise(SessionExercise exercise) {
-        showUpdateExistingExerciseDialog(exercise);
+    private void editExercise(SessionExercise se) {
+        editDialogHelper.showEditDialog(se);
     }
 
     private void removeExercise(SessionExercise exercise) {
-        // TODO: Refresh exercise order of all exercises in the list after removing an exercise.
         Toast.makeText(this, "Rows affected: " + String.valueOf(seda.deleteSessionExercise(exercise.getId())), Toast.LENGTH_SHORT).show();
         seda.fixExerciseOrders(seda.getExercisesBySessionId(sessionId));
         recreate();
@@ -196,7 +198,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         bottomSheetDialog.setContentView(sheetView);
 
-// Handle clicks
+        // Handle clicks
         Button btnExisting = sheetView.findViewById(R.id.btnAddExistingExercise);
         Button btnNew = sheetView.findViewById(R.id.btnAddNewExercise);
         Button btnCancel = sheetView.findViewById(R.id.btnCancel);
@@ -208,7 +210,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
         });
 
         btnNew.setOnClickListener(v -> {
-            showAddNewExerciseDialog();
+            editDialogHelper.showEditDialog(sessionId);
             bottomSheetDialog.dismiss();
         });
 
@@ -217,171 +219,4 @@ public class SessionDetailsActivity extends AppCompatActivity {
         bottomSheetDialog.show();
     }
 
-    private boolean validateStringInput(String input) {
-        if(input.isEmpty()){
-            return false;
-        }else return !input.isBlank();
-    }
-
-    private void showAddNewExerciseDialog() {
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_new_exercise, null);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(dialogView)
-                .setPositiveButton("OK", null)
-                .setNegativeButton("Cancel", (d, w) -> d.dismiss());
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        EditText inputName = dialogView.findViewById(R.id.inputExerciseName);
-        EditText inputReps = dialogView.findViewById(R.id.inputReps);
-        EditText inputWeight = dialogView.findViewById(R.id.inputWeight);
-
-        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-
-        /*                  */
-        /* INPUT VALIDATION */
-        /*                  */
-
-        positiveButton.setOnClickListener(v -> {
-            String inputNameStr = inputName.getText().toString();
-            String inputRepsStr = inputReps.getText().toString();
-            String inputWeightStr = inputWeight.getText().toString();
-
-            if(!validateStringInput(inputNameStr)){
-                //FAIL
-                inputName.setError("Name cannot be empty or blank.");
-            }else
-            if(!validateStringInput(inputRepsStr) || Integer.parseInt(inputRepsStr) == 0){
-                //FAIL
-                inputReps.setError("Reps cannot be 0 or empty.");
-            }else
-            if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
-                //FAIL
-                inputWeight.setError("Weight cannot be <= 0 or empty.");
-            }else{
-                long newExerciseId = eda.addExercise(inputNameStr);
-                int newExerciseOrder;
-                List<SessionExercise> exerciseList = seda.getExercisesBySessionId(sessionId);
-                newExerciseOrder = exerciseList.size() + 1;
-                seda.addSessionExercise(
-                        sessionId,
-                        newExerciseId,
-                        newExerciseOrder,
-                        Integer.parseInt(inputRepsStr),
-                        Double.parseDouble(inputWeightStr)
-                );
-                Toast.makeText(this, "Successfully added '" + inputNameStr + "'.", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-                recreate();
-            }
-        });
-    }
-
-    private void showAddExistingExerciseDialog(Exercise exercise) {
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_existing_exercise, null);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(dialogView)
-                .setPositiveButton("OK", null)
-                .setNegativeButton("Cancel", (d, w) -> d.dismiss());
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        EditText inputName = dialogView.findViewById(R.id.inputExerciseName);
-        EditText inputReps = dialogView.findViewById(R.id.inputReps);
-        EditText inputWeight = dialogView.findViewById(R.id.inputWeight);
-
-        inputName.setHint(exercise.getName());
-
-        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-
-        /*                  */
-        /* INPUT VALIDATION */
-        /*                  */
-
-        positiveButton.setOnClickListener(v -> {
-            String inputRepsStr = inputReps.getText().toString();
-            String inputWeightStr = inputWeight.getText().toString();
-
-            if(!validateStringInput(inputRepsStr) || Integer.parseInt(inputRepsStr) == 0){
-                //FAIL
-                inputReps.setError("Reps cannot be 0 or empty.");
-            }else
-            if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
-                //FAIL
-                inputWeight.setError("Weight cannot be <= 0 or empty.");
-            }else{
-                int newExerciseOrder;
-                List<SessionExercise> exerciseList = seda.getExercisesBySessionId(sessionId);
-                newExerciseOrder = exerciseList.size() + 1;
-                seda.addSessionExercise(
-                        sessionId,
-                        exercise.getId(),
-                        newExerciseOrder,
-                        Integer.parseInt(inputRepsStr),
-                        Double.parseDouble(inputWeightStr)
-                );
-                dialog.dismiss();
-                recreate();
-            }
-        });
-    }
-
-    private void showUpdateExistingExerciseDialog(SessionExercise e) {
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_existing_exercise, null);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(dialogView)
-                .setPositiveButton("OK", null)
-                .setNegativeButton("Cancel", (d, w) -> d.dismiss());
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        EditText inputName = dialogView.findViewById(R.id.inputExerciseName);
-        EditText inputReps = dialogView.findViewById(R.id.inputReps);
-        EditText inputWeight = dialogView.findViewById(R.id.inputWeight);
-
-        inputName.setHint(e.getName());
-        inputReps.setText(String.valueOf(e.getReps()));
-        inputWeight.setText(String.valueOf(e.getWeight()));
-
-        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-
-        /*                  */
-        /* INPUT VALIDATION */
-        /*                  */
-
-        positiveButton.setOnClickListener(v -> {
-            String inputRepsStr = inputReps.getText().toString();
-            String inputWeightStr = inputWeight.getText().toString();
-
-            if(!validateStringInput(inputRepsStr) || Integer.parseInt(inputRepsStr) == 0){
-                //FAIL
-                inputReps.setError("Reps cannot be 0 or empty.");
-            }else
-            if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
-                //FAIL
-                inputWeight.setError("Weight cannot be <= 0 or empty.");
-            }else{
-                int newReps = Integer.parseInt(inputRepsStr);
-                double newWeight = Double.parseDouble(inputWeightStr);
-
-                SessionExercise update = new SessionExercise(
-                        e.getId(),
-                        e.getSessionId(),
-                        e.getExerciseId(),
-                        e.getExerciseOrder(),
-                        newReps,
-                        newWeight
-                );
-                Toast.makeText(this, String.valueOf(seda.updateSessionExercise(update)), Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-                recreate();
-            }
-        });
-    }
 }
