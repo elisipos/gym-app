@@ -1,12 +1,11 @@
 package com.example.gymapp;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -14,11 +13,11 @@ import com.example.gymapp.models.Exercise;
 import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class EditDialogHelper {
     private final Context context;
@@ -154,38 +153,54 @@ public class EditDialogHelper {
     }
 
     public void showEditDialog(Session s) {
-        View dialogView = inflater.inflate(R.layout.dialog_new_session, null);
+        View dialogNewSessionView = inflater.inflate(R.layout.dialog_new_session, null);
 
-        EditText sessionNameInput = dialogView.findViewById(R.id.inputSessionName);
-        EditText sessionDateInput = dialogView.findViewById(R.id.inputSessionDate);
+        EditText sessionNameInput = dialogNewSessionView.findViewById(R.id.inputSessionName);
+        EditText sessionDateInput = dialogNewSessionView.findViewById(R.id.inputSessionDate);
 
         SimpleDateFormat sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
+
         sessionDateInput.setText(sdf.format(s.getDate()));
         sessionNameInput.setText(s.getName());
 
+        AtomicLong sessionDate = new AtomicLong();
+
+        sessionDate.set(new Date().getTime());
+
+        sessionDateInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View dialogCalendarView = inflater.inflate(R.layout.dialog_calendar, null);
+                final CalendarView calendar = dialogCalendarView.findViewById(R.id.calendarView);
+
+                calendar.setDate(sessionDate.get(), false, true);
+
+                AlertDialog dialog = new AlertDialog.Builder(context)
+                        .setView(dialogCalendarView)
+                        .setPositiveButton("OK", (d, i) -> {
+                            sessionDate.set(calendar.getDate());
+                            sessionDateInput.setText(sdf.format(new Date(sessionDate.get())));
+                        })
+                        .setNegativeButton("Cancel", (d, i) -> d.dismiss())
+                        .create();
+                dialog.show();
+            }
+        });
+
         AlertDialog dialog = new AlertDialog.Builder(context)
-                .setView(dialogView)
+                .setView(dialogNewSessionView)
 
                 .setPositiveButton("OK", (d, i) -> {
-                    long sessionDate = 0;
-                    try {
-                        sessionDate = Long.parseLong(
-                                String.valueOf(
-                                        sdf.parse(sessionDateInput.getText().toString()).getTime()
-                                )
-                        );
-                    } catch (ParseException e) {
-                        Log.e("MainActivity", "ParseException: "+e);
-                    }
                     String sessionName = sessionNameInput.getText().toString();
 
                     if(sessionName.isEmpty() || sessionName.isBlank()){
                         sessionNameInput.setError("Name cannot be empty");
-                    }else if(sessionDate <= 0){
+                    }else if(sessionDate.get() <= 0){
                         sessionDateInput.setError("Date cannot be before Unix Epoch");
                     }else{
-                        Session update = new Session(s.getId(), sessionDate, sessionName);
+                        Session update = new Session(s.getId(), sessionDate.get(), sessionName);
                         sda.updateSession(update);
+                        listener.onExerciseUpdated();
                     }
                 })
 
