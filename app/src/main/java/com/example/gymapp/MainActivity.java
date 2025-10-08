@@ -80,48 +80,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showNewSessionDialog() {
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_new_session, null);
-
-        EditText sessionNameInput = dialogView.findViewById(R.id.inputSessionName);
-        EditText sessionDateInput = dialogView.findViewById(R.id.inputSessionDate);
-
-        long nowMillis = System.currentTimeMillis();
-        SimpleDateFormat sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
-        String todayFormatted = sdf.format(new Date(nowMillis));
-        sessionDateInput.setText(todayFormatted);
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(dialogView)
-
-                .setPositiveButton("OK", (d, i) -> {
-                    long sessionDate = 0;
-                    try {
-                        sessionDate = Long.parseLong(
-                                String.valueOf(
-                                        sdf.parse(sessionDateInput.getText().toString()).getTime()
-                                )
-                        );
-                    } catch (ParseException e) {
-                        Log.e("MainActivity", "ParseException: "+e);
-                        Toast.makeText(this, "ParseException: "+e, Toast.LENGTH_LONG).show();
-                    }
-                    String sessionName = sessionNameInput.getText().toString();
-
-                    if(sessionName.isEmpty() || sessionName.isBlank()){
-                        Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
-                    }else if(sessionDate <= 0){
-                        Toast.makeText(this, "Date is not valid, M-d-yyyy", Toast.LENGTH_SHORT).show();
-                    }else{
-                        sda.addSession(sessionDate, sessionName);
-                        recreate();
-                    }
-                })
-
-                .setNegativeButton("Cancel", (d, i) -> d.dismiss())
-                .create();
-
-        dialog.show();
+        editDialogHelper.showEditDialog();
     }
 
     private void showSessionOptionsPopup(View anchor, Session session) {
