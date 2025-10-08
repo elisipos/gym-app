@@ -114,11 +114,6 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
         this.longClickListener = listener;
     }
 
-    public void updateData(List<SessionExercise> newSe) {
-        sessionExerciseList.clear();
-        sessionExerciseList.addAll(newSe);
-        notifyDataSetChanged();
-    }
 }
 
 

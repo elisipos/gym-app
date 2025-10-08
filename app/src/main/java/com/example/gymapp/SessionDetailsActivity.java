@@ -158,17 +158,6 @@ public class SessionDetailsActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        refreshExercises();
-    }
-
-    private void refreshExercises() {
-        List<SessionExercise> updatedList = seda.getExercisesWithNamesBySessionId(sessionId);
-        adapter.updateData(updatedList);
-    }
-
     private void showPopupMenu(View anchorView, int position) {
         PopupMenu popup = new PopupMenu(this, anchorView);
         popup.getMenuInflater().inflate(R.menu.list_item_options_menu, popup.getMenu());
