@@ -25,7 +25,7 @@ import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 
-public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExerciseAdapter.ExerciseViewHolder> {
+public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExerciseAdapter.SessionExerciseViewHolder> {
     private Context context;
     private List<SessionExercise> sessionExerciseList;
     private DecimalFormat df;
@@ -44,15 +44,15 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
 
     @NonNull
     @Override
-    public ExerciseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SessionExerciseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_session_exercise, parent, false);
-        return new ExerciseViewHolder(view);
+        return new SessionExerciseViewHolder(view);
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    public void onBindViewHolder(@NonNull ExerciseViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SessionExerciseViewHolder holder, int position) {
 
         // Formatting //
         SessionExercise exercise = sessionExerciseList.get(position);
@@ -94,10 +94,10 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
         notifyItemMoved(fromPosition, toPosition);
     }
 
-    static class ExerciseViewHolder extends RecyclerView.ViewHolder {
+    static class SessionExerciseViewHolder extends RecyclerView.ViewHolder {
         TextView nameText, repsText, weightText;
         ImageView dragHandle;
-        ExerciseViewHolder(View itemView) {
+        SessionExerciseViewHolder(View itemView) {
             super(itemView);
             nameText = itemView.findViewById(R.id.textViewExerciseName);
             repsText = itemView.findViewById(R.id.textViewReps);
@@ -112,6 +112,12 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
 
     public void setOnExerciseLongClickListener(OnExerciseLongClickListener listener) {
         this.longClickListener = listener;
+    }
+
+    public void updateData(List<SessionExercise> newSe) {
+        sessionExerciseList.clear();
+        sessionExerciseList.addAll(newSe);
+        notifyDataSetChanged();
     }
 }
 

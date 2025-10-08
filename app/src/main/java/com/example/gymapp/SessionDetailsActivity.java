@@ -3,6 +3,7 @@ package com.example.gymapp;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -75,9 +76,15 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
         sessionId = getIntent().getLongExtra("session_id", -1);
 
+        Log.d("SDA", "getLongExtra value: " + sessionId);
+
         if(sessionId != -1){
             Session session = sda.getSessionById(sessionId);
             exerciseList = seda.getExercisesWithNamesBySessionId(sessionId);
+            Log.d("SDA", "Fetching list...");
+            for(int i = 0; i < exerciseList.size(); i++){
+                Log.d("SDA", "Exercise " + i + ": " + exerciseList.get(i).getName());
+            }
 
             sessionNameText.setText(session.getName() + " (SessionDetails)");
             sessionDateText.setText(sdf.format(session.getDate()));
@@ -135,7 +142,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
                         if(data != null) {
                             // Do thing with result.
                             long exerciseId = result.getData().getLongExtra("exercise_id", -1);
-                            editDialogHelper.showEditDialog(eda.getExerciseById(exerciseId), exerciseId);
+                            editDialogHelper.showEditDialog(eda.getExerciseById(exerciseId), sessionId);
                         }
                     }
                 }
@@ -149,6 +156,17 @@ public class SessionDetailsActivity extends AppCompatActivity {
                 showExerciseChoiceDialog();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshExercises();
+    }
+
+    private void refreshExercises() {
+        List<SessionExercise> updatedList = seda.getExercisesWithNamesBySessionId(sessionId);
+        adapter.updateData(updatedList);
     }
 
     private void showPopupMenu(View anchorView, int position) {

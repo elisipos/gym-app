@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -17,10 +18,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.gymapp.adapters.ExerciseAdapter;
 import com.example.gymapp.adapters.SessionAdapter;
+import com.example.gymapp.models.Exercise;
 import com.example.gymapp.models.Session;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,7 +39,12 @@ public class MainActivity extends AppCompatActivity {
     private MyDatabaseHelper dbHelper;
 
     private SessionDataAccess sda;
+    private ExerciseDataAccess eda;
     private EditDialogHelper editDialogHelper;
+
+    private TabLayout tabLayout;
+    private ListView listView;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +64,12 @@ public class MainActivity extends AppCompatActivity {
         editDialogHelper = new EditDialogHelper(this, null, null, sda, () -> recreate());
 
         FloatingActionButton newSessionBtn = findViewById(R.id.newSessionBtn);
-        ListView listView = findViewById(R.id.listViewElem);
-        TextView welcomeView = findViewById(R.id.welcomeTxt);
 
+        tabLayout = findViewById(R.id.tabLayout);
+        listView = findViewById(R.id.listViewElem);
+        recyclerView = findViewById(R.id.exerciseRecyclerView);
+
+        TextView welcomeView = findViewById(R.id.welcomeTxt);
         welcomeView.setText("Welcome (MainActivity)");
 
         List<Session> sessions = sda.getSessions();
@@ -69,6 +83,30 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
+        tabLayout.selectTab(tabLayout.getTabAt(0));
+        listView.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
+                if (position == 0){
+                    listView.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
+                } else if (position == 1) {
+                    listView.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                    loadExerciseRecycler();
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
 
 
         newSessionBtn.setOnClickListener(new View.OnClickListener() {
@@ -103,5 +141,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         popup.show();
+    }
+
+    private void loadExerciseRecycler() {
+        eda = new ExerciseDataAccess(dbHelper.getWritableDatabase());
+        List<Exercise> exercises = eda.getExercises();
+
+        ExerciseAdapter exerciseAdapter = new ExerciseAdapter(this, exercises);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(exerciseAdapter);
     }
 }

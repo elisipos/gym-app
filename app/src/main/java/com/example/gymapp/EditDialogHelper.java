@@ -154,6 +154,7 @@ public class EditDialogHelper {
                         Integer.parseInt(inputRepsStr),
                         Double.parseDouble(inputWeightStr)
                 );
+                Log.d("SDA", "Added to db");
                 dialog.dismiss();
                 listener.onExerciseUpdated();
             }
@@ -273,7 +274,6 @@ public class EditDialogHelper {
         });
     }
 
-
     public void showEditDialog() {
         View dialogView = inflater.inflate(R.layout.dialog_new_session, null);
 
@@ -324,6 +324,7 @@ public class EditDialogHelper {
 
         dialog.show();
     }
+
     private boolean validateStringInput(String input) {
         if(input.isEmpty()){
             return false;

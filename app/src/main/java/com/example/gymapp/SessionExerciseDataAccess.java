@@ -3,6 +3,7 @@ package com.example.gymapp;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
@@ -158,6 +159,9 @@ public class SessionExerciseDataAccess {
         }
 
         cursor.close();
+        for(int i = 0; i < list.size(); i++){
+            Log.d("SEDA", list.get(i).getName());
+        }
         return list;
     }
 

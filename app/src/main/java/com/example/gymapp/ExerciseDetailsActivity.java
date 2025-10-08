@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gymapp.adapters.ExerciseAdapter;
 import com.example.gymapp.models.Exercise;
@@ -39,7 +41,7 @@ public class ExerciseDetailsActivity extends AppCompatActivity {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         eda = new ExerciseDataAccess(db);
 
-        ListView listView = findViewById(R.id.listViewElem);
+        RecyclerView recyclerView = findViewById(R.id.recyclerViewExercises);
         TextView titleView = findViewById(R.id.textViewExercises);
 
         titleView.setText("Existing Exercises (ExerciseDetails)");
@@ -53,6 +55,8 @@ public class ExerciseDetailsActivity extends AppCompatActivity {
             setResult(RESULT_OK, data);
             finish();
         });
-        listView.setAdapter(adapter);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
     }
 }
