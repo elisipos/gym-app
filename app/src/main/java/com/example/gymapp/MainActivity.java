@@ -94,9 +94,11 @@ public class MainActivity extends AppCompatActivity {
                 if (position == 0){
                     listView.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
+                    newSessionBtn.setVisibility(View.VISIBLE);
                 } else if (position == 1) {
                     listView.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
+                    newSessionBtn.setVisibility(View.GONE);
                     loadExerciseRecycler();
                 }
             }
