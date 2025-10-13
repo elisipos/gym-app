@@ -67,7 +67,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
         eda = new ExerciseDataAccess(db);
         sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
 
-        editDialogHelper = new EditDialogHelper(this, seda, eda, sda, () -> recreate());
+        editDialogHelper = new EditDialogHelper(this, seda, eda, sda, (res) -> recreate());
 
         TextView sessionNameText = findViewById(R.id.sessionNameText);
         TextView sessionDateText = findViewById(R.id.sessionDateText);

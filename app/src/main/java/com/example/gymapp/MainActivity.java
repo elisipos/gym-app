@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ListView listView;
     private RecyclerView recyclerView;
+    private FloatingActionButton newSessionBtn;
+    private ExerciseAdapter exerciseAdapter;
+    private int tabLayoutTabSelected = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +64,11 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new MyDatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         sda = new SessionDataAccess(db);
+        eda = new ExerciseDataAccess(db);
 
-        editDialogHelper = new EditDialogHelper(this, null, null, sda, () -> recreate());
+        editDialogHelper = new EditDialogHelper(this, null, eda, sda, (res) -> handleDialogHelperUpdate(res));
 
-        FloatingActionButton newSessionBtn = findViewById(R.id.newSessionBtn);
+        newSessionBtn = findViewById(R.id.newSessionBtn);
 
         tabLayout = findViewById(R.id.tabLayout);
         listView = findViewById(R.id.listViewElem);
@@ -86,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.selectTab(tabLayout.getTabAt(0));
         listView.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
+        newSessionBtn.setVisibility(View.VISIBLE);
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -145,13 +151,51 @@ public class MainActivity extends AppCompatActivity {
         popup.show();
     }
 
+    private void showExerciseOptionsPopup(View anchor, Exercise exercise) {
+        PopupMenu popup = new PopupMenu(this, anchor);
+        popup.getMenuInflater().inflate(R.menu.list_item_options_menu, popup.getMenu());
+
+        popup.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.action_edit) {
+                //TODO: Handle edit
+                editDialogHelper.showEditDialog(exercise);
+                return true;
+            } else if (itemId == R.id.action_delete) {
+                //TODO: Handle remove
+                eda.deleteExercise(exercise.getId());
+                return true;
+            }
+            return false;
+        });
+
+        popup.show();
+    }
+
     private void loadExerciseRecycler() {
         eda = new ExerciseDataAccess(dbHelper.getWritableDatabase());
         List<Exercise> exercises = eda.getExercises();
 
-        ExerciseAdapter exerciseAdapter = new ExerciseAdapter(this, exercises);
+        exerciseAdapter = new ExerciseAdapter(this, exercises);
+
+        exerciseAdapter.setOnExerciseLongClickListener(new ExerciseAdapter.OnExerciseLongClickListener() {
+            @Override
+            public void onExerciseLongClick(long exerciseId, View view) {
+                showExerciseOptionsPopup(view, eda.getExerciseById(exerciseId));
+            }
+        });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), LinearLayoutManager.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(exerciseAdapter);
+    }
+
+    private void handleDialogHelperUpdate(boolean isAffectingExercises) {
+        if(!isAffectingExercises) {
+            recreate();
+        }else{
+            loadExerciseRecycler();
+        }
     }
 }

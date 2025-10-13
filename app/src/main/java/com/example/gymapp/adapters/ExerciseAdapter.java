@@ -16,6 +16,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     private final Context context;
     private final List<Exercise> exercises;
     private OnExerciseClickListener listener;
+    private OnExerciseLongClickListener longClickListener;
 
     public ExerciseAdapter(Context context, List<Exercise> exercises) {
         this.context = context;
@@ -24,6 +25,10 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     public void setOnExerciseClickListener(OnExerciseClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setOnExerciseLongClickListener(OnExerciseLongClickListener longClickListener){
+        this.longClickListener = longClickListener;
     }
 
     @NonNull
@@ -43,6 +48,14 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                 listener.onExerciseClick(ex.getId());
             }
         });
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if(longClickListener != null) {
+                longClickListener.onExerciseLongClick(ex.getId(), v);
+                return true;
+            }
+            return false;
+        });
     }
 
     @Override
@@ -52,6 +65,9 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     public interface OnExerciseClickListener {
         void onExerciseClick(long exerciseId);
+    }
+    public interface OnExerciseLongClickListener {
+        void onExerciseLongClick(long exerciseId, View view);
     }
 
     static class ExerciseViewHolder extends RecyclerView.ViewHolder {

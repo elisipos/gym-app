@@ -47,7 +47,7 @@ public class EditDialogHelper {
     }
 
     public interface OnActionCompletedListener {
-        void onExerciseUpdated();
+        void onExerciseUpdated(boolean isAffectingExercises);
     }
 
     public void showEditDialog(SessionExercise se) {
@@ -102,7 +102,7 @@ public class EditDialogHelper {
                 );
                 seda.updateSessionExercise(update);
                 dialog.dismiss();
-                listener.onExerciseUpdated();
+                listener.onExerciseUpdated(false);
             }
         });
     }
@@ -156,7 +156,7 @@ public class EditDialogHelper {
                 );
                 Log.d("SDA", "Added to db");
                 dialog.dismiss();
-                listener.onExerciseUpdated();
+                listener.onExerciseUpdated(false);
             }
         });
     }
@@ -208,7 +208,7 @@ public class EditDialogHelper {
                             Session update = new Session(s.getId(), sessionDate.get(), sessionName);
                             sda.updateSession(update);
                             dialog.dismiss();
-                            listener.onExerciseUpdated();
+                            listener.onExerciseUpdated(false);
                         }
                     }
                 });
@@ -269,7 +269,7 @@ public class EditDialogHelper {
                         Double.parseDouble(inputWeightStr)
                 );
                 dialog.dismiss();
-                listener.onExerciseUpdated();
+                listener.onExerciseUpdated(false);
             }
         });
     }
@@ -315,7 +315,7 @@ public class EditDialogHelper {
                         }else{
                             sda.addSession(Long.parseLong(String.valueOf(sessionDate)), sessionName);
                             dialog.dismiss();
-                            listener.onExerciseUpdated();
+                            listener.onExerciseUpdated(false);
                         }
                     }
                 });
@@ -325,6 +325,38 @@ public class EditDialogHelper {
         dialog.show();
     }
 
+    public void showEditDialog(Exercise e) {
+        View dialogView = inflater.inflate(R.layout.dialog_new_exercise_raw, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(dialogView)
+                .setPositiveButton("OK", null)
+                .setNegativeButton("Cancel", (d, w) -> d.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        EditText inputExerciseName = dialogView.findViewById(R.id.inputExerciseName);
+        TextView dialogTitle = dialogView.findViewById(R.id.dialogTitle);
+
+        inputExerciseName.setText(e.getName());
+        dialogTitle.setText("Edit exercise?");
+
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+        positiveButton.setOnClickListener(v -> {
+            String inputExerciseStr = String.valueOf(inputExerciseName.getText());
+            if(!validateStringInput(inputExerciseStr)) {
+                // FAIL
+                inputExerciseName.setError("Name cannot be empty.");
+            } else {
+                Exercise newExercise = new Exercise(e.getId(), inputExerciseStr);
+                eda.updateExercise(newExercise);
+                dialog.dismiss();
+                listener.onExerciseUpdated(true);
+            }
+        });
+    }
     private boolean validateStringInput(String input) {
         if(input.isEmpty()){
             return false;
