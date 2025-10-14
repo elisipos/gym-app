@@ -274,57 +274,6 @@ public class EditDialogHelper {
         });
     }
 
-    public void showEditDialog() {
-        View dialogView = inflater.inflate(R.layout.dialog_new_session, null);
-
-        EditText sessionNameInput = dialogView.findViewById(R.id.inputSessionName);
-        EditText sessionDateInput = dialogView.findViewById(R.id.inputSessionDate);
-
-        long nowMillis = System.currentTimeMillis();
-        SimpleDateFormat sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
-        String todayFormatted = sdf.format(new Date(nowMillis));
-        sessionDateInput.setText(todayFormatted);
-
-        AtomicLong sessionDate = new AtomicLong(new Date().getTime());
-
-        sessionDateInput.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showCalendarView(sessionDate, sdf, sessionDateInput);
-            }
-        });
-
-        AlertDialog dialog = new AlertDialog.Builder(context)
-                .setView(dialogView)
-
-                .setPositiveButton("OK", null)
-                .setNegativeButton("Cancel", (d, i) -> d.dismiss())
-                .create();
-
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String sessionName = sessionNameInput.getText().toString();
-
-                        if(!validateStringInput(sessionName)){
-                            sessionNameInput.setError("Name cannot be empty.");
-                        }else{
-                            sda.addSession(Long.parseLong(String.valueOf(sessionDate)), sessionName);
-                            dialog.dismiss();
-                            listener.onExerciseUpdated(false);
-                        }
-                    }
-                });
-            }
-        });
-
-        dialog.show();
-    }
-
     public void showEditDialog(Exercise e) {
         View dialogView = inflater.inflate(R.layout.dialog_new_exercise_raw, null);
 
@@ -356,6 +305,89 @@ public class EditDialogHelper {
                 listener.onExerciseUpdated(true);
             }
         });
+    }
+
+    public void showEditDialogSession() {
+        View dialogView = inflater.inflate(R.layout.dialog_new_session, null);
+
+        EditText sessionNameInput = dialogView.findViewById(R.id.inputSessionName);
+        EditText sessionDateInput = dialogView.findViewById(R.id.inputSessionDate);
+
+        long nowMillis = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
+        String todayFormatted = sdf.format(new Date(nowMillis));
+        sessionDateInput.setText(todayFormatted);
+
+        AtomicLong sessionDate = new AtomicLong(new Date().getTime());
+
+        sessionDateInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCalendarView(sessionDate, sdf, sessionDateInput);
+            }
+        });
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(dialogView)
+                .setPositiveButton("OK", null)
+                .setNegativeButton("Cancel", (d, i) -> d.dismiss())
+        .create();
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String sessionName = sessionNameInput.getText().toString();
+
+                        if(!validateStringInput(sessionName)){
+                            sessionNameInput.setError("Name cannot be empty.");
+                        }else{
+                            sda.addSession(Long.parseLong(String.valueOf(sessionDate)), sessionName);
+                            dialog.dismiss();
+                            listener.onExerciseUpdated(false);
+                        }
+                    }
+                });
+            }
+        });
+
+        dialog.show();
+    }
+
+    public void showEditDialogExercise() {
+        View dialogView = inflater.inflate(R.layout.dialog_new_exercise_raw, null);
+
+        EditText exerciseNameInput = dialogView.findViewById(R.id.inputExerciseName);
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(dialogView)
+                .setPositiveButton("OK", null)
+                .setNegativeButton("Cancel", (d, i) -> d.dismiss())
+        .create();
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String exerciseName = String.valueOf(exerciseNameInput.getText());
+                        if(!validateStringInput(exerciseName)){
+                            //FAIL
+                            exerciseNameInput.setError("Name cannot be empty.");
+                        }else{
+                            eda.addExercise(exerciseName);
+                            dialog.dismiss();
+                            listener.onExerciseUpdated(true);
+                        }
+                    }
+                });
+            }
+        });
+        dialog.show();
     }
     private boolean validateStringInput(String input) {
         if(input.isEmpty()){

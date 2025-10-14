@@ -46,9 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ListView listView;
     private RecyclerView recyclerView;
-    private FloatingActionButton newSessionBtn;
+    private FloatingActionButton newEntryBtn;
     private ExerciseAdapter exerciseAdapter;
-    private int tabLayoutTabSelected = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         editDialogHelper = new EditDialogHelper(this, null, eda, sda, (res) -> handleDialogHelperUpdate(res));
 
-        newSessionBtn = findViewById(R.id.newSessionBtn);
+        newEntryBtn = findViewById(R.id.newEntryBtn);
 
         tabLayout = findViewById(R.id.tabLayout);
         listView = findViewById(R.id.listViewElem);
@@ -91,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.selectTab(tabLayout.getTabAt(0));
         listView.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
-        newSessionBtn.setVisibility(View.VISIBLE);
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -100,11 +98,9 @@ public class MainActivity extends AppCompatActivity {
                 if (position == 0){
                     listView.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
-                    newSessionBtn.setVisibility(View.VISIBLE);
                 } else if (position == 1) {
                     listView.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
-                    newSessionBtn.setVisibility(View.GONE);
                     loadExerciseRecycler();
                 }
             }
@@ -117,16 +113,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        newSessionBtn.setOnClickListener(new View.OnClickListener() {
+        newEntryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showNewSessionDialog();
+                int position = tabLayout.getSelectedTabPosition();
+                if(position == 0){
+                    editDialogHelper.showEditDialogSession();
+                }else if(position == 1){
+                    editDialogHelper.showEditDialogExercise();
+                }
             }
         });
-    }
-
-    private void showNewSessionDialog() {
-        editDialogHelper.showEditDialog();
     }
 
     private void showSessionOptionsPopup(View anchor, Session session) {
@@ -158,12 +155,11 @@ public class MainActivity extends AppCompatActivity {
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.action_edit) {
-                //TODO: Handle edit
                 editDialogHelper.showEditDialog(exercise);
                 return true;
             } else if (itemId == R.id.action_delete) {
-                //TODO: Handle remove
                 eda.deleteExercise(exercise.getId());
+                loadExerciseRecycler();
                 return true;
             }
             return false;
