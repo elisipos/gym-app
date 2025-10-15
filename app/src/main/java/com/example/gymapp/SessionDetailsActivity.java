@@ -187,6 +187,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
     private void removeExercise(SessionExercise exercise) {
+        seda.deleteSessionExercise(exercise.getId());
         seda.fixExerciseOrders(seda.getExercisesBySessionId(sessionId));
         recreate();
     }
