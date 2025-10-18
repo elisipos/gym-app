@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.gymapp.adapters.GroupDividerItemDecoration;
 import com.example.gymapp.adapters.SessionExerciseAdapter;
 import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
@@ -76,21 +77,27 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
         sessionId = getIntent().getLongExtra("session_id", -1);
 
-        Log.d("SDA", "getLongExtra value: " + sessionId);
-
         if(sessionId != -1){
             Session session = sda.getSessionById(sessionId);
             exerciseList = seda.getExercisesWithNamesBySessionId(sessionId);
-            Log.d("SDA", "Fetching list...");
-            for(int i = 0; i < exerciseList.size(); i++){
-                Log.d("SDA", "Exercise " + i + ": " + exerciseList.get(i).getName());
-            }
 
             sessionNameText.setText(session.getName() + " (SessionDetails)");
             sessionDateText.setText(sdf.format(session.getDate()));
 
             adapter = new SessionExerciseAdapter(this, exerciseList);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+            int dividerColor = getResources().getColor(android.R.color.darker_gray);
+            int dividerHeight = 2;
+
+            recyclerView.addItemDecoration(new GroupDividerItemDecoration(
+                    this,
+                    dividerColor,
+                    dividerHeight,
+                    40,
+                    exerciseList
+            ));
+
             recyclerView.setAdapter(adapter);
 
             ItemTouchHelper.SimpleCallback callback =

@@ -57,7 +57,7 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
         // Formatting //
         SessionExercise exercise = sessionExerciseList.get(position);
         df = new DecimalFormat("#.##");
-        holder.nameText.setText(exercise.getName() + ", " + exercise.getExerciseOrder());
+        holder.nameText.setText(exercise.getName());
         holder.repsText.setText(exercise.getReps() + " reps");
         holder.weightText.setText(df.format(exercise.getWeight()) + " lbs");
         // End Formatting //
