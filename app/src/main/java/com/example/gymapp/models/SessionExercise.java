@@ -22,6 +22,15 @@ public class SessionExercise {
         this.weight = weight;
     }
 
+    public SessionExercise(long id, long sessionId, long exerciseId, int exerciseOrder, int repsPrimary, double weight) {
+        this.id = id;
+        this.sessionId = sessionId;
+        this.exerciseId = exerciseId;
+        this.exerciseOrder = exerciseOrder;
+        this.repsPrimary = repsPrimary;
+        this.weight = weight;
+    }
+
     public SessionExercise(long id, long sessionId, long exerciseId, int exerciseOrder, int repsPrimary, int repsSecondary, double weight, String name) {
         this.id = id;
         this.sessionId = sessionId;
@@ -29,6 +38,16 @@ public class SessionExercise {
         this.exerciseOrder = exerciseOrder;
         this.repsPrimary = repsPrimary;
         this.repsSecondary = repsSecondary;
+        this.weight = weight;
+        this.name = name;
+    }
+
+    public SessionExercise(long id, long sessionId, long exerciseId, int exerciseOrder, int repsPrimary, double weight, String name) {
+        this.id = id;
+        this.sessionId = sessionId;
+        this.exerciseId = exerciseId;
+        this.exerciseOrder = exerciseOrder;
+        this.repsPrimary = repsPrimary;
         this.weight = weight;
         this.name = name;
     }

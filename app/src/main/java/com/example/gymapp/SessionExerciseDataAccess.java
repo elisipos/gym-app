@@ -18,12 +18,24 @@ public class SessionExerciseDataAccess {
         this.db = db;
     }
 
-    public long addSessionExercise(long sessionId, long exerciseId, int exerciseOrder, int reps, double weight) {
+    public long addSessionExercise(long sessionId, long exerciseId, int exerciseOrder, int repsPrimary, double weight) {
         ContentValues values = new ContentValues();
         values.put("sessionId", sessionId);
         values.put("exerciseId", exerciseId);
         values.put("exerciseOrder", exerciseOrder);
-        values.put("reps", reps);
+        values.put("repsPrimary", repsPrimary);
+        values.put("weight", weight);
+
+        return db.insert("SessionExercise", null, values);
+    }
+
+    public long addSessionExercise(long sessionId, long exerciseId, int exerciseOrder, int repsPrimary, int repsSecondary, double weight) {
+        ContentValues values = new ContentValues();
+        values.put("sessionId", sessionId);
+        values.put("exerciseId", exerciseId);
+        values.put("exerciseOrder", exerciseOrder);
+        values.put("repsPrimary", repsPrimary);
+        values.put("repsSecondary", repsSecondary);
         values.put("weight", weight);
 
         return db.insert("SessionExercise", null, values);

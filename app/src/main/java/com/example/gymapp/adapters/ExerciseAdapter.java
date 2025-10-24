@@ -41,7 +41,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     @Override
     public void onBindViewHolder(@NonNull ExerciseViewHolder holder, int position) {
         Exercise ex = exercises.get(position);
-        holder.exerciseName.setText(ex.getName());
+        holder.exerciseName.setText(ex.getName() + ", " + ex.getId());
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {

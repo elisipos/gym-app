@@ -68,7 +68,7 @@ public class EditDialogHelper {
         EditText inputWeight = dialogView.findViewById(R.id.inputWeight);
 
         inputName.setHint(se.getName());
-        inputReps.setText(String.valueOf(se.getReps()));
+        inputReps.setText(String.valueOf(se.getRepsPrimary()));
         inputWeight.setText(String.valueOf(se.getWeight()));
 
         Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
@@ -257,7 +257,7 @@ public class EditDialogHelper {
                 //FAIL
                 inputWeight.setError("Weight cannot be <= 0 or empty.");
             }else{
-                long newExerciseId = eda.addExercise(inputNameStr);
+                long newExerciseId = eda.addExercise(inputNameStr, false); //TODO: CHANGE ONCE TOGGLE IS THERE
                 int newExerciseOrder;
                 List<SessionExercise> exerciseList = seda.getExercisesBySessionId(sessionId);
                 newExerciseOrder = exerciseList.size() + 1;
@@ -299,7 +299,7 @@ public class EditDialogHelper {
                 // FAIL
                 inputExerciseName.setError("Name cannot be empty.");
             } else {
-                Exercise newExercise = new Exercise(e.getId(), inputExerciseStr);
+                Exercise newExercise = new Exercise(e.getId(), inputExerciseStr, false); //TODO: CHANGE ONCE TOGGLE IS THERE
                 eda.updateExercise(newExercise);
                 dialog.dismiss();
                 listener.onExerciseUpdated(true);
@@ -379,7 +379,7 @@ public class EditDialogHelper {
                             //FAIL
                             exerciseNameInput.setError("Name cannot be empty.");
                         }else{
-                            eda.addExercise(exerciseName);
+                            eda.addExercise(exerciseName, false); //TODO: CHANGE ONCE TOGGLE IS THERE
                             dialog.dismiss();
                             listener.onExerciseUpdated(true);
                         }
