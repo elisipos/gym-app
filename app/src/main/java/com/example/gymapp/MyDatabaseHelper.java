@@ -1,21 +1,14 @@
 package com.example.gymapp;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import com.example.gymapp.models.Session;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "gym-app-db.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Table Info
     public static final String TABLE_SESSION = "Session";
@@ -23,12 +16,14 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_EXERCISE = "Exercise";
     public static final String COLUMN_EXERCISE_ID = "exerciseId";
     public static final String COLUMN_EXERCISE_ORDER = "exerciseOrder";
-    public static final String COLUMN_REPS = "reps";
+    public static final String COLUMN_REPS_PRIMARY = "repsPrimary";
+    public static final String COLUMN_REPS_SECONDARY = "repsSecondary";
     public static final String COLUMN_WEIGHT = "weight";
     public static final String TABLE_SESSION_EXERCISE = "SessionExercise";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_DATE = "date";
     public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_SPLIT = "split";
 
     // Create Table SQL
     private static final String CREATE_TABLE_SESSION =
@@ -40,7 +35,9 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_EXERCISE =
             "CREATE TABLE " + TABLE_EXERCISE + "("
                     + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + COLUMN_NAME + " TEXT" + ")";
+                    + COLUMN_NAME + " TEXT, "
+                    + COLUMN_SPLIT + " INTEGER NOT NULL"
+                    + ")";
 
     private static final String CREATE_TABLE_SESSION_EXERCISE =
             "CREATE TABLE " + TABLE_SESSION_EXERCISE + "("
@@ -48,7 +45,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                     + COLUMN_SESSION_ID + " INTEGER NOT NULL, "
                     + COLUMN_EXERCISE_ID + " INTEGER NOT NULL, "
                     + COLUMN_EXERCISE_ORDER + " INTEGER, "
-                    + COLUMN_REPS + " INTEGER, "
+                    + COLUMN_REPS_PRIMARY + " INTEGER, "
+                    + COLUMN_REPS_SECONDARY + " INTEGER, "
                     + COLUMN_WEIGHT + " REAL, "
                     + "FOREIGN KEY(" + COLUMN_SESSION_ID + ")" + "REFERENCES " + TABLE_SESSION + "(" + COLUMN_ID + "), "
                     + "FOREIGN KEY(" + COLUMN_EXERCISE_ID + ")" + "REFERENCES " + TABLE_EXERCISE + "(" + COLUMN_ID + ")"

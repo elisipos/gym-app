@@ -1,29 +1,34 @@
 package com.example.gymapp.models;
 
+import java.util.ArrayList;
+
 public class SessionExercise {
     long id;
     long sessionId;
     long exerciseId;
     int exerciseOrder;
-    int reps;
+    int repsPrimary;
+    int repsSecondary;
     double weight;
     String name;
 
-    public SessionExercise(long id, long sessionId, long exerciseId, int exerciseOrder, int reps, double weight) {
+    public SessionExercise(long id, long sessionId, long exerciseId, int exerciseOrder, int repsPrimary, int repsSecondary, double weight) {
         this.id = id;
         this.sessionId = sessionId;
         this.exerciseId = exerciseId;
         this.exerciseOrder = exerciseOrder;
-        this.reps = reps;
+        this.repsPrimary = repsPrimary;
+        this.repsSecondary = repsSecondary;
         this.weight = weight;
     }
 
-    public SessionExercise(long id, long sessionId, long exerciseId, int exerciseOrder, int reps, double weight, String name) {
+    public SessionExercise(long id, long sessionId, long exerciseId, int exerciseOrder, int repsPrimary, int repsSecondary, double weight, String name) {
         this.id = id;
         this.sessionId = sessionId;
         this.exerciseId = exerciseId;
         this.exerciseOrder = exerciseOrder;
-        this.reps = reps;
+        this.repsPrimary = repsPrimary;
+        this.repsSecondary = repsSecondary;
         this.weight = weight;
         this.name = name;
     }
@@ -36,7 +41,14 @@ public class SessionExercise {
 
     public int getExerciseOrder() {return exerciseOrder;}
 
-    public int getReps() {return reps;}
+    public int getRepsPrimary() {return repsPrimary;}
+    public int getRepsSecondary() {return repsSecondary;}
+    public ArrayList<Integer> getRepsAll() {
+        ArrayList<Integer> allReps = new ArrayList<Integer>();
+        allReps.add(repsPrimary);
+        allReps.add(repsSecondary);
+        return allReps;
+    }
 
     public double getWeight() {return weight;}
 

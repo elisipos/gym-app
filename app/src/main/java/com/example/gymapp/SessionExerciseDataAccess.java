@@ -31,7 +31,7 @@ public class SessionExerciseDataAccess {
 
     public List<SessionExercise> getSessionExercises() {
         List<SessionExercise> list = new ArrayList<>();
-        String[] cols = new String[]{"id", "sessionId", "exerciseId", "exerciseOrder", "reps", "weight"};
+        String[] cols = new String[]{"id", "sessionId", "exerciseId", "exerciseOrder", "repsPrimary", "repsSecondary", "weight"};
 
         Cursor cursor = db.query("SessionExercise", cols,
                 null, null, null, null, "exerciseOrder ASC");
@@ -41,9 +41,10 @@ public class SessionExerciseDataAccess {
             long sessionId = cursor.getLong(cursor.getColumnIndexOrThrow("sessionId"));
             long exerciseId = cursor.getLong(cursor.getColumnIndexOrThrow("exerciseId"));
             int exerciseOrder = cursor.getInt(cursor.getColumnIndexOrThrow("exerciseOrder"));
-            int reps = cursor.getInt(cursor.getColumnIndexOrThrow("reps"));
+            int repsPrimary = cursor.getInt(cursor.getColumnIndexOrThrow("repsPrimary"));
+            int repsSecondary = cursor.getInt(cursor.getColumnIndexOrThrow("repsSecondary"));
             double weight = cursor.getDouble(cursor.getColumnIndexOrThrow("weight"));
-            list.add(new SessionExercise(id, sessionId, exerciseId, exerciseOrder, reps, weight));
+            list.add(new SessionExercise(id, sessionId, exerciseId, exerciseOrder, repsPrimary, repsSecondary, weight));
         }
         cursor.close();
 
@@ -52,7 +53,7 @@ public class SessionExerciseDataAccess {
 
     public SessionExercise getSessionExerciseById(long esId){
         SessionExercise sessionExercise = null;
-        String[] cols = new String[]{"id", "sessionId", "exerciseId", "exerciseOrder", "reps", "weight"};
+        String[] cols = new String[]{"id", "sessionId", "exerciseId", "exerciseOrder", "repsPrimary", "repsSecondary", "weight"};
         String selection = "id = ?";
         String[] selectionArgs = { String.valueOf(esId) };
         Cursor cursor = db.query("SessionExercise", cols, selection, selectionArgs,
@@ -63,9 +64,10 @@ public class SessionExerciseDataAccess {
             long sessionId = cursor.getLong(cursor.getColumnIndexOrThrow("sessionId"));
             long exerciseId = cursor.getLong(cursor.getColumnIndexOrThrow("exerciseId"));
             int exerciseOrder = cursor.getInt(cursor.getColumnIndexOrThrow("exerciseOrder"));
-            int reps = cursor.getInt(cursor.getColumnIndexOrThrow("reps"));
+            int repsPrimary = cursor.getInt(cursor.getColumnIndexOrThrow("repsPrimary"));
+            int repsSecondary = cursor.getInt(cursor.getColumnIndexOrThrow("repsSecondary"));
             double weight = cursor.getDouble(cursor.getColumnIndexOrThrow("weight"));
-            sessionExercise = new SessionExercise(id, sessionId, exerciseId, exerciseOrder, reps, weight);
+            sessionExercise = new SessionExercise(id, sessionId, exerciseId, exerciseOrder, repsPrimary, repsSecondary, weight);
         }
         cursor.close();
 
@@ -74,7 +76,7 @@ public class SessionExerciseDataAccess {
 
     public List<SessionExercise> getExercisesBySessionId(long sId) {
         List<SessionExercise> list = new ArrayList<>();
-        String[] cols = {"id", "sessionId", "exerciseId", "exerciseOrder", "reps", "weight"};
+        String[] cols = {"id", "sessionId", "exerciseId", "exerciseOrder", "repsPrimary", "repsSecondary", "weight"};
         String selection = "sessionId = ?";
         String[] selectionArgs = {String.valueOf(sId)};
 
@@ -86,9 +88,10 @@ public class SessionExerciseDataAccess {
             long sessionId = cursor.getLong(cursor.getColumnIndexOrThrow("sessionId"));
             long exerciseId = cursor.getLong(cursor.getColumnIndexOrThrow("exerciseId"));
             int exerciseOrder = cursor.getInt(cursor.getColumnIndexOrThrow("exerciseOrder"));
-            int reps = cursor.getInt(cursor.getColumnIndexOrThrow("reps"));
+            int repsPrimary = cursor.getInt(cursor.getColumnIndexOrThrow("repsPrimary"));
+            int repsSecondary = cursor.getInt(cursor.getColumnIndexOrThrow("repsSecondary"));
             double weight = cursor.getDouble(cursor.getColumnIndexOrThrow("weight"));
-            list.add(new SessionExercise(id, sessionId, exerciseId, exerciseOrder, reps, weight));
+            list.add(new SessionExercise(id, sessionId, exerciseId, exerciseOrder, repsPrimary, repsSecondary, weight));
         }
         cursor.close();
 
@@ -103,7 +106,8 @@ public class SessionExerciseDataAccess {
                     position.getSessionId(),
                     position.getExerciseId(),
                     i + 1,
-                    position.getReps(),
+                    position.getRepsPrimary(),
+                    position.getRepsSecondary(),
                     position.getWeight()
             );
             updateSessionExercise(reorderedSe);
@@ -112,7 +116,7 @@ public class SessionExerciseDataAccess {
 
     public SessionExercise getSessionExerciseByBothIds(long sId, long eId) {
         SessionExercise se = null;
-        String[] cols = {"id", "sessionId", "exerciseId", "exerciseOrder", "reps", "weight"};
+        String[] cols = {"id", "sessionId", "exerciseId", "exerciseOrder", "repsPrimary", "repsSecondary", "weight"};
         String selection = "sessionId = ?, exerciseId = ?";
         String[] selectionArgs = {String.valueOf(sId), String.valueOf(eId)};
 
@@ -124,9 +128,10 @@ public class SessionExerciseDataAccess {
             long sessionId = cursor.getLong(cursor.getColumnIndexOrThrow("sessionId"));
             long exerciseId = cursor.getLong(cursor.getColumnIndexOrThrow("exerciseId"));
             int exerciseOrder = cursor.getInt(cursor.getColumnIndexOrThrow("exerciseOrder"));
-            int reps = cursor.getInt(cursor.getColumnIndexOrThrow("reps"));
+            int repsPrimary = cursor.getInt(cursor.getColumnIndexOrThrow("repsPrimary"));
+            int repsSecondary = cursor.getInt(cursor.getColumnIndexOrThrow("repsSecondary"));
             double weight = cursor.getDouble(cursor.getColumnIndexOrThrow("weight"));
-            se = new SessionExercise(id, sessionId, exerciseId, exerciseOrder, reps, weight);
+            se = new SessionExercise(id, sessionId, exerciseId, exerciseOrder, repsPrimary, repsSecondary, weight);
         }
         cursor.close();
 
@@ -137,7 +142,7 @@ public class SessionExerciseDataAccess {
         List<SessionExercise> list = new ArrayList<>();
 
         String sql =
-                "SELECT se.id, se.sessionId, se.exerciseId, se.exerciseOrder, se.reps, se.weight, e.name AS exerciseName " +
+                "SELECT se.id, se.sessionId, se.exerciseId, se.exerciseOrder, se.repsPrimary, se.repsSecondary, se.weight, e.name AS exerciseName " +
                 "FROM SessionExercise se " +
                 "JOIN Exercise e ON se.exerciseId = e.id " +
                 "WHERE se.sessionId = ? " +
@@ -150,11 +155,12 @@ public class SessionExerciseDataAccess {
             long sessionId = cursor.getLong(cursor.getColumnIndexOrThrow("sessionId"));
             long exerciseId = cursor.getLong(cursor.getColumnIndexOrThrow("exerciseId"));
             int exerciseOrder = cursor.getInt(cursor.getColumnIndexOrThrow("exerciseOrder"));
-            int reps = cursor.getInt(cursor.getColumnIndexOrThrow("reps"));
+            int repsPrimary = cursor.getInt(cursor.getColumnIndexOrThrow("repsPrimary"));
+            int repsSecondary = cursor.getInt(cursor.getColumnIndexOrThrow("repsSecondary"));
             double weight = cursor.getDouble(cursor.getColumnIndexOrThrow("weight"));
             String exerciseName = cursor.getString(cursor.getColumnIndexOrThrow("exerciseName"));
 
-            SessionExercise se = new SessionExercise(id, sessionId, exerciseId, exerciseOrder, reps, weight, exerciseName);
+            SessionExercise se = new SessionExercise(id, sessionId, exerciseId, exerciseOrder, repsPrimary, repsSecondary, weight, exerciseName);
             list.add(se);
         }
 
@@ -170,7 +176,8 @@ public class SessionExerciseDataAccess {
         values.put("sessionId", se.getSessionId());
         values.put("exerciseId", se.getExerciseId());
         values.put("exerciseOrder", se.getExerciseOrder());
-        values.put("reps", se.getReps());
+        values.put("repsPrimary", se.getRepsPrimary());
+        values.put("repsSecondary", se.getRepsSecondary());
         values.put("weight", se.getWeight());
 
         String whereClause = "id = ?";
