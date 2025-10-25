@@ -176,21 +176,29 @@ public class EditDialogHelper {
             String inputRepsSecondaryStr = inputRepsSecondary.getText().toString();
             String inputWeightStr = inputWeight.getText().toString();
 
+            boolean hasError = false;
+
             if(!validateStringInput(inputRepsPrimaryStr) || Integer.parseInt(inputRepsPrimaryStr) == 0){
                 //FAIL
                 inputRepsPrimary.setError("Reps cannot be 0 or empty.");
-            }else if(split[0]){
-                // TODO: FIX THIS PART, THE CODE IS JUMPING TO THE END OF THE CHAIN INSTEAD OF CONTINUING.
+                hasError = true;
+            }
+
+            if(split[0]){
                 if(!validateStringInput(inputRepsSecondaryStr) || Integer.parseInt(inputRepsSecondaryStr) == 0){
                     //FAIL
                     inputRepsSecondary.setError("Reps cannot be 0 or empty");
+                    hasError = true;
                 }
-            }else if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
+            }
+
+            if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
                 //FAIL
-                Log.d("EditDialog", "failing");
                 inputWeight.setError("Weight cannot be <= 0 or empty.");
-            }else{
-                Log.d("EditDialog", "past the error checking");
+                hasError = true;
+            }
+
+            if(!hasError){
                 int newRepsPrimary = Integer.parseInt(inputRepsPrimaryStr);
                 double newWeight = Double.parseDouble(inputWeightStr);
                 if (split[0]) {
@@ -206,8 +214,9 @@ public class EditDialogHelper {
                             newWeight
                     );
                     seda.updateSessionExercise(update);
-                    Log.d("EditDialog", "updating sessionExercise, split[0] = true");
-                }else{
+
+                } else {
+
                     SessionExercise update = new SessionExercise(
                             se.getId(),
                             se.getSessionId(),
@@ -217,7 +226,7 @@ public class EditDialogHelper {
                             newWeight
                     );
                     seda.updateSessionExercise(update);
-                    Log.d("EditDialog", "updating sessionExercise, split[0] = false");
+
                 }
 
                 if(split[0] != e.getSplit()){
@@ -227,12 +236,12 @@ public class EditDialogHelper {
                             split[0]
                     );
                     eda.updateExercise(update);
-                    Log.d("EditDialog", "updating Exercise, split[0] != e.getSplit() == true");
+
                 }
                 dialog.dismiss();
-                Log.d("EditDialog", "dismissing...");
                 listener.onExerciseUpdated(false);
             }
+
         });
     }
 
