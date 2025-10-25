@@ -5,9 +5,12 @@ import android.content.DialogInterface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +53,12 @@ public class EditDialogHelper {
         void onExerciseUpdated(boolean isAffectingExercises);
     }
 
+    public interface layoutSetter {
+        void setTxtLayoutTo(boolean split);
+        void setEditLayoutTo(boolean split);
+        void refreshLayout(boolean[] split);
+    }
+
     public void showEditDialog(SessionExercise se) {
 //      Ex: Changing session exercise details inside of session exercise; "Edit" menu button
 
@@ -57,51 +66,171 @@ public class EditDialogHelper {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(dialogView)
-                .setPositiveButton("OK", null)
+                .setPositiveButton("Save", null)
                 .setNegativeButton("Cancel", (d, w) -> d.dismiss());
 
         AlertDialog dialog = builder.create();
         dialog.show();
 
         EditText inputName = dialogView.findViewById(R.id.inputExerciseName);
-        EditText inputReps = dialogView.findViewById(R.id.inputReps);
-        EditText inputWeight = dialogView.findViewById(R.id.inputWeight);
 
+        CheckBox checkBox = dialogView.findViewById(R.id.checkBox);
+
+        TextView repsPrimaryTxtView = dialogView.findViewById(R.id.txtViewRepsPrimary);
+        TextView repsSecondaryTxtView = dialogView.findViewById(R.id.txtViewRepsSecondary);
+
+        EditText inputRepsPrimary = dialogView.findViewById(R.id.inputRepsPrimary);
+        EditText inputRepsSecondary = dialogView.findViewById(R.id.inputRepsSecondary);
+
+        EditText inputWeight = dialogView.findViewById(R.id.inputWeight);
+        TextView dialogTitle = dialogView.findViewById(R.id.dialogTitle);
+
+        dialogTitle.setText("Edit Exercise Details");
         inputName.setHint(se.getName());
-        inputReps.setText(String.valueOf(se.getRepsPrimary()));
+        inputRepsPrimary.setText(String.valueOf(se.getRepsPrimary()));
         inputWeight.setText(String.valueOf(se.getWeight()));
 
         Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+        layoutSetter layoutSetter = new layoutSetter() {
+            @Override
+            public void setTxtLayoutTo(boolean split) {
+
+                LinearLayout.LayoutParams repsPrimaryTxtViewLayoutParams = (LinearLayout.LayoutParams) repsPrimaryTxtView.getLayoutParams();
+                repsPrimaryTxtViewLayoutParams.weight = split ? 50 : 100;
+                repsPrimaryTxtView.setLayoutParams(repsPrimaryTxtViewLayoutParams);
+
+                LinearLayout.LayoutParams repsSecondaryTxtViewLayoutParams = (LinearLayout.LayoutParams) repsSecondaryTxtView.getLayoutParams();
+                repsSecondaryTxtViewLayoutParams.weight = split ? 50 : 0;
+                repsSecondaryTxtView.setLayoutParams(repsSecondaryTxtViewLayoutParams);
+
+                if(split){
+                    repsSecondaryTxtView.setVisibility(TextView.VISIBLE);
+
+                }else{
+                    repsSecondaryTxtView.setVisibility(TextView.GONE);
+
+                }
+            }
+
+            @Override
+            public void setEditLayoutTo(boolean split) {
+
+                LinearLayout.LayoutParams inputRepsPrimaryLayoutParams = (LinearLayout.LayoutParams) inputRepsPrimary.getLayoutParams();
+                inputRepsPrimaryLayoutParams.weight = split ? 50 : 100;
+                inputRepsPrimary.setLayoutParams(inputRepsPrimaryLayoutParams);
+
+                LinearLayout.LayoutParams inputRepsSecondaryLayoutParams = (LinearLayout.LayoutParams) inputRepsSecondary.getLayoutParams();
+                inputRepsSecondaryLayoutParams.weight = split ? 50 : 0;
+                inputRepsSecondary.setLayoutParams(inputRepsSecondaryLayoutParams);
+
+                if(split){
+                    inputRepsSecondary.setVisibility(EditText.VISIBLE);
+                    int repsSecondary = se.getRepsSecondary();
+                    inputRepsSecondary.setText(repsSecondary > 0 ? String.valueOf(repsSecondary) : "");
+                }else{
+                    inputRepsSecondary.setVisibility(EditText.GONE);
+                    inputRepsSecondary.setText("");
+                }
+            }
+
+            @Override
+            public void refreshLayout(boolean[] split) {
+                if(split[0]) {
+                    checkBox.setChecked(true);
+                    this.setTxtLayoutTo(true);
+                    this.setEditLayoutTo(true);
+                    repsPrimaryTxtView.setText("Left Side Reps");
+                    repsSecondaryTxtView.setText("Right Side Reps");
+                }else{
+                    checkBox.setChecked(false);
+                    this.setTxtLayoutTo(false);
+                    this.setEditLayoutTo(false);
+                    repsPrimaryTxtView.setText("Reps");
+                }
+            }
+
+        };
+
+
+        Exercise e = eda.getExerciseById(se.getExerciseId());
+        final boolean[] split = {e.getSplit()};
+
+        layoutSetter.refreshLayout(split);
+
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                split[0] = !split[0];
+                layoutSetter.refreshLayout(split);
+            }
+        });
 
         /*                  */
         /* INPUT VALIDATION */
         /*                  */
 
         positiveButton.setOnClickListener(v -> {
-            String inputRepsStr = inputReps.getText().toString();
+            Log.d("EditDialog", "positive button clicked");
+            String inputRepsPrimaryStr = inputRepsPrimary.getText().toString();
+            String inputRepsSecondaryStr = inputRepsSecondary.getText().toString();
             String inputWeightStr = inputWeight.getText().toString();
 
-            if(!validateStringInput(inputRepsStr) || Integer.parseInt(inputRepsStr) == 0){
+            if(!validateStringInput(inputRepsPrimaryStr) || Integer.parseInt(inputRepsPrimaryStr) == 0){
                 //FAIL
-                inputReps.setError("Reps cannot be 0 or empty.");
-            }else
-            if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
+                inputRepsPrimary.setError("Reps cannot be 0 or empty.");
+            }else if(split[0]){
+                // TODO: FIX THIS PART, THE CODE IS JUMPING TO THE END OF THE CHAIN INSTEAD OF CONTINUING.
+                if(!validateStringInput(inputRepsSecondaryStr) || Integer.parseInt(inputRepsSecondaryStr) == 0){
+                    //FAIL
+                    inputRepsSecondary.setError("Reps cannot be 0 or empty");
+                }
+            }else if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
                 //FAIL
+                Log.d("EditDialog", "failing");
                 inputWeight.setError("Weight cannot be <= 0 or empty.");
             }else{
-                int newReps = Integer.parseInt(inputRepsStr);
+                Log.d("EditDialog", "past the error checking");
+                int newRepsPrimary = Integer.parseInt(inputRepsPrimaryStr);
                 double newWeight = Double.parseDouble(inputWeightStr);
+                if (split[0]) {
+                    int newRepsSecondary = Integer.parseInt(inputRepsSecondaryStr);
 
-                SessionExercise update = new SessionExercise(
-                        se.getId(),
-                        se.getSessionId(),
-                        se.getExerciseId(),
-                        se.getExerciseOrder(),
-                        newReps,
-                        newWeight
-                );
-                seda.updateSessionExercise(update);
+                    SessionExercise update = new SessionExercise(
+                            se.getId(),
+                            se.getSessionId(),
+                            se.getExerciseId(),
+                            se.getExerciseOrder(),
+                            newRepsPrimary,
+                            newRepsSecondary,
+                            newWeight
+                    );
+                    seda.updateSessionExercise(update);
+                    Log.d("EditDialog", "updating sessionExercise, split[0] = true");
+                }else{
+                    SessionExercise update = new SessionExercise(
+                            se.getId(),
+                            se.getSessionId(),
+                            se.getExerciseId(),
+                            se.getExerciseOrder(),
+                            newRepsPrimary,
+                            newWeight
+                    );
+                    seda.updateSessionExercise(update);
+                    Log.d("EditDialog", "updating sessionExercise, split[0] = false");
+                }
+
+                if(split[0] != e.getSplit()){
+                    Exercise update = new Exercise(
+                            e.getId(),
+                            e.getName(),
+                            split[0]
+                    );
+                    eda.updateExercise(update);
+                    Log.d("EditDialog", "updating Exercise, split[0] != e.getSplit() == true");
+                }
                 dialog.dismiss();
+                Log.d("EditDialog", "dismissing...");
                 listener.onExerciseUpdated(false);
             }
         });
@@ -121,7 +250,8 @@ public class EditDialogHelper {
         dialog.show();
 
         EditText inputName = dialogView.findViewById(R.id.inputExerciseName);
-        EditText inputReps = dialogView.findViewById(R.id.inputReps);
+        EditText inputRepsPrimary = dialogView.findViewById(R.id.inputRepsPrimary);
+        EditText inputRepsSecondary = dialogView.findViewById(R.id.inputRepsSecondary);
         EditText inputWeight = dialogView.findViewById(R.id.inputWeight);
 
         inputName.setHint(e.getName());
@@ -133,12 +263,12 @@ public class EditDialogHelper {
         /*                  */
 
         positiveButton.setOnClickListener(v -> {
-            String inputRepsStr = inputReps.getText().toString();
+            String inputRepsStr = inputRepsPrimary.getText().toString();
             String inputWeightStr = inputWeight.getText().toString();
 
             if(!validateStringInput(inputRepsStr) || Integer.parseInt(inputRepsStr) == 0){
                 //FAIL
-                inputReps.setError("Reps cannot be 0 or empty.");
+                inputRepsPrimary.setError("Reps cannot be 0 or empty.");
             }else
             if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
                 //FAIL

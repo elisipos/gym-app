@@ -34,19 +34,71 @@
         android:hint="ExerciseName"
         android:inputType="none" />
 
-    <TextView
-        android:id="@+id/txtViewReps"
+    <CheckBox
+        android:id="@+id/checkBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Reps" />
+        android:text="Split Exercise" />
 
-    <EditText
-        android:id="@+id/inputReps"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="8..."
-        android:inputType="number" />
+        android:orientation="vertical"
+        android:id="@+id/splitRepsContainerLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            android:id="@+id/splitRepsTextViewsLayout">
+
+            <TextView
+                android:id="@+id/txtViewRepsPrimary"
+                android:layout_width="0dp"
+                android:layout_weight="100"
+                android:layout_height="wrap_content"
+                android:text="RepsPrimary" />
+
+            <TextView
+                android:id="@+id/txtViewRepsSecondary"
+                android:layout_width="0dp"
+                android:layout_weight="0"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="RepsSecondary" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            android:id="@+id/splitRepsEditTextsLayout">
+
+            <EditText
+                android:id="@+id/inputRepsPrimary"
+                android:layout_width="0dp"
+                android:layout_weight="100"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="8..."
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/inputRepsSecondary"
+                android:layout_width="0dp"
+                android:layout_weight="0"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="8..."
+                android:visibility="gone"
+                android:inputType="number" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/txtViewWeight"
