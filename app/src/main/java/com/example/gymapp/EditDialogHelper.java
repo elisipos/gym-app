@@ -171,7 +171,6 @@ public class EditDialogHelper {
         /*                  */
 
         positiveButton.setOnClickListener(v -> {
-            Log.d("EditDialog", "positive button clicked");
             String inputRepsPrimaryStr = inputRepsPrimary.getText().toString();
             String inputRepsSecondaryStr = inputRepsSecondary.getText().toString();
             String inputWeightStr = inputWeight.getText().toString();
@@ -422,10 +421,27 @@ public class EditDialogHelper {
         dialog.show();
 
         EditText inputName = dialogView.findViewById(R.id.inputExerciseName);
-        EditText inputReps = dialogView.findViewById(R.id.inputReps);
+
+        CheckBox checkBox = dialogView.findViewById(R.id.checkBox);
+
+        EditText inputRepsPrimary = dialogView.findViewById(R.id.inputRepsPrimary);
+        EditText inputRepsSecondary = dialogView.findViewById(R.id.inputRepsSecondary);
+
         EditText inputWeight = dialogView.findViewById(R.id.inputWeight);
 
         Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+        LayoutSetter ls = new LayoutSetter(dialogView);
+        boolean[] split = {false};
+        ls.refreshLayout(split);
+
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                split[0] = !split[0];
+                ls.refreshLayout(split);
+            }
+        });
 
         /*                  */
         /* INPUT VALIDATION */
@@ -433,32 +449,64 @@ public class EditDialogHelper {
 
         positiveButton.setOnClickListener(v -> {
             String inputNameStr = inputName.getText().toString();
-            String inputRepsStr = inputReps.getText().toString();
+            String inputRepsPrimaryStr = inputRepsPrimary.getText().toString();
+            String inputRepsSecondaryStr = inputRepsSecondary.getText().toString();
             String inputWeightStr = inputWeight.getText().toString();
+
+            boolean hasError = false;
 
             if(!validateStringInput(inputNameStr)){
                 //FAIL
                 inputName.setError("Name cannot be empty or blank.");
-            }else
-            if(!validateStringInput(inputRepsStr) || Integer.parseInt(inputRepsStr) == 0){
+                hasError = true;
+            }
+
+            if(!validateStringInput(inputRepsPrimaryStr) || Integer.parseInt(inputRepsPrimaryStr) == 0){
                 //FAIL
-                inputReps.setError("Reps cannot be 0 or empty.");
-            }else
+                inputRepsPrimary.setError("Reps cannot be 0 or empty.");
+                hasError = true;
+            }
+
+            if(split[0]){
+                if(!validateStringInput(inputRepsSecondaryStr) || Integer.parseInt(inputRepsSecondaryStr) == 0){
+                    //FAIL
+                    inputRepsSecondary.setError("Reps cannot be 0 or empty.");
+                    hasError = true;
+                }
+            }
+
             if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
                 //FAIL
                 inputWeight.setError("Weight cannot be <= 0 or empty.");
-            }else{
-                long newExerciseId = eda.addExercise(inputNameStr, false); //TODO: CHANGE ONCE TOGGLE IS THERE
+                hasError = true;
+            }
+
+            if(!hasError){
+                long newExerciseId = eda.addExercise(inputNameStr, checkBox.isChecked());
+
                 int newExerciseOrder;
                 List<SessionExercise> exerciseList = seda.getExercisesBySessionId(sessionId);
                 newExerciseOrder = exerciseList.size() + 1;
-                seda.addSessionExercise(
-                        sessionId,
-                        newExerciseId,
-                        newExerciseOrder,
-                        Integer.parseInt(inputRepsStr),
-                        Double.parseDouble(inputWeightStr)
-                );
+
+                if(checkBox.isChecked()){
+                    seda.addSessionExercise(
+                            sessionId,
+                            newExerciseId,
+                            newExerciseOrder,
+                            Integer.parseInt(inputRepsPrimaryStr),
+                            Integer.parseInt(inputRepsSecondaryStr),
+                            Double.parseDouble(inputWeightStr)
+                    );
+                }else{
+                    seda.addSessionExercise(
+                            sessionId,
+                            newExerciseId,
+                            newExerciseOrder,
+                            Integer.parseInt(inputRepsPrimaryStr),
+                            Double.parseDouble(inputWeightStr)
+                    );
+                }
+
                 dialog.dismiss();
                 listener.onExerciseUpdated(false);
             }
