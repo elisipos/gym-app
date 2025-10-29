@@ -600,11 +600,22 @@ public class EditDialogHelper {
         View dialogView = inflater.inflate(R.layout.dialog_new_exercise_raw, null);
 
         EditText exerciseNameInput = dialogView.findViewById(R.id.inputExerciseName);
+        CheckBox checkBox = dialogView.findViewById(R.id.checkBox);
+
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(dialogView)
                 .setPositiveButton("OK", null)
                 .setNegativeButton("Cancel", (d, i) -> d.dismiss())
         .create();
+
+        boolean[] split = {false};
+
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                split[0] = !split[0];
+            }
+        });
 
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
@@ -614,11 +625,12 @@ public class EditDialogHelper {
                     @Override
                     public void onClick(View v) {
                         String exerciseName = String.valueOf(exerciseNameInput.getText());
+
                         if(!validateStringInput(exerciseName)){
                             //FAIL
                             exerciseNameInput.setError("Name cannot be empty.");
                         }else{
-                            eda.addExercise(exerciseName, false); //TODO: CHANGE ONCE TOGGLE IS THERE
+                            eda.addExercise(exerciseName, split[0]);
                             dialog.dismiss();
                             listener.onExerciseUpdated(true);
                         }
