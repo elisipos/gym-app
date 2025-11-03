@@ -25,12 +25,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gymapp.adapters.GroupDividerItemDecoration;
 import com.example.gymapp.adapters.SessionExerciseAdapter;
+import com.example.gymapp.models.Exercise;
 import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -44,7 +46,8 @@ public class SessionDetailsActivity extends AppCompatActivity {
     private SimpleDateFormat sdf;
     private SessionExerciseAdapter adapter;
     private ActivityResultLauncher<Intent> addExerciseLauncher;
-    List<SessionExercise> exerciseList;
+    List<SessionExercise> sessionExerciseList;
+    List<Exercise> exerciseList;
     private EditDialogHelper editDialogHelper;
 
     private long sessionId;
@@ -79,12 +82,20 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
         if(sessionId != -1){
             Session session = sda.getSessionById(sessionId);
-            exerciseList = seda.getExercisesWithNamesBySessionId(sessionId);
+            sessionExerciseList = seda.getExercisesWithNamesBySessionId(sessionId);
+            exerciseList = new ArrayList<>();
+            for(int i = 0; i < sessionExerciseList.size(); i++){
+                exerciseList.add(
+                        eda.getExerciseById(
+                                sessionExerciseList.get(i).getExerciseId()
+                        )
+                );
+            }
 
             sessionNameText.setText(session.getName() + " (SessionDetails)");
             sessionDateText.setText(sdf.format(session.getDate()));
 
-            adapter = new SessionExerciseAdapter(this, exerciseList);
+            adapter = new SessionExerciseAdapter(this, sessionExerciseList, exerciseList);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
             int dividerColor = getResources().getColor(android.R.color.darker_gray);
@@ -95,7 +106,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
                     dividerColor,
                     dividerHeight,
                     40,
-                    exerciseList
+                    sessionExerciseList
             ));
 
             recyclerView.setAdapter(adapter);
@@ -111,8 +122,8 @@ public class SessionDetailsActivity extends AppCompatActivity {
                         int fromPos = viewHolder.getAdapterPosition();
                         int toPos = target.getAdapterPosition();
 
-                        Collections.swap(exerciseList, fromPos, toPos);
-                        seda.fixExerciseOrders(exerciseList);
+                        Collections.swap(sessionExerciseList, fromPos, toPos);
+                        seda.fixExerciseOrders(sessionExerciseList);
                         adapter.notifyItemMoved(fromPos, toPos);
                         return true;
                     }
@@ -171,7 +182,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
-            SessionExercise selected = exerciseList.get(position);
+            SessionExercise selected = sessionExerciseList.get(position);
 
             if(itemId == R.id.action_edit) {
                 //EDIT

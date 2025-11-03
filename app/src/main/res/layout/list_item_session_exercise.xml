@@ -1,62 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:orientation="horizontal"-->
+<!--    android:gravity="center_vertical"-->
+<!--    android:padding="12dp"-->
+<!--    android:id="@+id/OuterContainer">-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/textViewExerciseName"-->
+<!--        android:layout_weight="1.5"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Exercise Name"-->
+<!--        android:textStyle="bold" />-->
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_weight="1"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="end"-->
+<!--        android:orientation="vertical"-->
+<!--        android:id="@+id/ExerciseDetailsContainer">-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/textViewWeight"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center_horizontal"-->
+<!--            android:text="### lbs" />-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:gravity="center_horizontal">-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textViewRepsPrimary"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="## left" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textViewRepsSecondary"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="## right" />-->
+
+<!--        </LinearLayout>-->
+
+<!--    </LinearLayout>-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/dragHandle"-->
+<!--        android:src="@drawable/ic_drag_handle"-->
+<!--        android:layout_width="25dp"-->
+<!--        android:layout_height="25dp"-->
+<!--        android:layout_gravity="center_vertical"-->
+<!--        android:layout_marginLeft="15dp"/>-->
+
+<!--</LinearLayout>-->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp"
-    android:background="?android:attr/selectableItemBackground">
+    android:padding="6dp"
+    android:id="@+id/listItemSessionExerciseLayout">
 
     <TextView
         android:id="@+id/textViewExerciseName"
-        android:layout_width="178dp"
-        android:layout_height="23dp"
-        android:layout_marginStart="4dp"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:text="Bench Press"
-        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Exercise Name"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewReps"
+        android:id="@+id/textViewWeight"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="124dp"
-        android:text="10 reps"
-        android:textAlignment="viewStart"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="19dp"
+        android:layout_marginEnd="56dp"
+        android:text="### lbs"
+        app:layout_constraintEnd_toStartOf="@+id/dragHandle"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewWeight"
+        android:id="@+id/textViewRepsPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="52dp"
-        android:text="100lbs"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="8dp"
+        android:text="## pri"
+        app:layout_constraintEnd_toStartOf="@+id/textViewWeight"
+        app:layout_constraintTop_toBottomOf="@+id/textViewWeight" />
+
+    <TextView
+        android:id="@+id/textViewRepsSecondary"
+        android:layout_width="wrap_content"
+        android:layout_height="19dp"
+        android:layout_marginTop="8dp"
+        android:text="## sec"
+
+        app:layout_constraintStart_toEndOf="@+id/textViewWeight"
+        app:layout_constraintTop_toBottomOf="@+id/textViewWeight" />
 
     <ImageView
         android:id="@+id/dragHandle"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:layout_marginEnd="4dp"
-        android:padding="8dp"
-        android:scaleX="2.5"
-        android:scaleY="2.5"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="10dp"
         android:src="@drawable/ic_drag_handle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
