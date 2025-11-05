@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,7 +22,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.gymapp.adapters.GroupDividerItemDecoration;
+import com.example.gymapp.item_decoration.DetailsDividerItemDecoration;
+import com.example.gymapp.item_decoration.GroupDividerItemDecoration;
 import com.example.gymapp.adapters.SessionExerciseAdapter;
 import com.example.gymapp.models.Exercise;
 import com.example.gymapp.models.Session;
@@ -34,6 +34,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -47,6 +48,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
     private SessionExerciseAdapter adapter;
     private ActivityResultLauncher<Intent> addExerciseLauncher;
     List<SessionExercise> sessionExerciseList;
+    HashMap<SessionExercise, Boolean> sessionExerciseMap;
     List<Exercise> exerciseList;
     private EditDialogHelper editDialogHelper;
 
@@ -83,6 +85,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
         if(sessionId != -1){
             Session session = sda.getSessionById(sessionId);
             sessionExerciseList = seda.getExercisesWithNamesBySessionId(sessionId);
+            sessionExerciseMap = seda.getExerciseSplitMapBySessionId(sessionId);
             exerciseList = new ArrayList<>();
             for(int i = 0; i < sessionExerciseList.size(); i++){
                 exerciseList.add(
@@ -99,7 +102,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
             int dividerColor = getResources().getColor(android.R.color.darker_gray);
-            int dividerHeight = 2;
+            int dividerHeight = 3;
 
             recyclerView.addItemDecoration(new GroupDividerItemDecoration(
                     this,
@@ -107,6 +110,21 @@ public class SessionDetailsActivity extends AppCompatActivity {
                     dividerHeight,
                     40,
                     sessionExerciseList
+            ));
+
+            HashMap<Integer, Boolean> seOrderMap = new HashMap<>();
+            for(SessionExercise se : sessionExerciseMap.keySet()){
+                seOrderMap.put(se.getExerciseOrder(), sessionExerciseMap.get(se));
+            }
+
+            Log.d("SDAC", seOrderMap.toString());
+
+            recyclerView.addItemDecoration(new DetailsDividerItemDecoration(
+                    this,
+                    dividerColor,
+                    2,
+                    20,
+                    seOrderMap
             ));
 
             recyclerView.setAdapter(adapter);

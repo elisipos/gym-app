@@ -1,4 +1,4 @@
-package com.example.gymapp.adapters;
+package com.example.gymapp.item_decoration;
 
 import android.content.Context;
 import android.graphics.Canvas;

@@ -9,6 +9,7 @@ import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SessionExerciseDataAccess {
@@ -177,9 +178,36 @@ public class SessionExerciseDataAccess {
         }
 
         cursor.close();
-        for(int i = 0; i < list.size(); i++){
-            Log.d("SEDA", list.get(i).getName());
+        return list;
+    }
+
+    public HashMap<SessionExercise, Boolean> getExerciseSplitMapBySessionId(long sId) {
+        HashMap<SessionExercise, Boolean> list = new HashMap<SessionExercise, Boolean>();
+
+        String sql =
+                "SELECT se.id, se.sessionId, se.exerciseId, se.exerciseOrder, se.repsPrimary, se.repsSecondary, se.weight, e.split AS exerciseSplit " +
+                "FROM SessionExercise se " +
+                "JOIN Exercise e ON se.exerciseId = e.id " +
+                "WHERE se.sessionId = ? " +
+                "ORDER BY se.exerciseOrder ASC";
+
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(sId)});
+
+        while (cursor.moveToNext()) {
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow("id"));
+            long sessionId = cursor.getLong(cursor.getColumnIndexOrThrow("sessionId"));
+            long exerciseId = cursor.getLong(cursor.getColumnIndexOrThrow("exerciseId"));
+            int exerciseOrder = cursor.getInt(cursor.getColumnIndexOrThrow("exerciseOrder"));
+            int repsPrimary = cursor.getInt(cursor.getColumnIndexOrThrow("repsPrimary"));
+            int repsSecondary = cursor.getInt(cursor.getColumnIndexOrThrow("repsSecondary"));
+            double weight = cursor.getDouble(cursor.getColumnIndexOrThrow("weight"));
+            boolean exerciseSplit = cursor.getInt(cursor.getColumnIndexOrThrow("exerciseSplit")) == 1;
+
+            SessionExercise se = new SessionExercise(id, sessionId, exerciseId, exerciseOrder, repsPrimary, repsSecondary, weight);
+            list.put(se, exerciseSplit);
         }
+
+        cursor.close();
         return list;
     }
 
