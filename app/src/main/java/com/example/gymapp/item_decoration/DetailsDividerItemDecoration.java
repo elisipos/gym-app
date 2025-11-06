@@ -34,19 +34,34 @@ public class DetailsDividerItemDecoration extends RecyclerView.ItemDecoration {
     public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state){
         int childCount = parent.getChildCount();
 
-        for(int i = 1; i <= childCount; i++){
-            View child = parent.getChildAt(i - 1);
+        for(int i = 0; i < childCount; i++){
+            View child = parent.getChildAt(i);
+            int adapterPos = parent.getChildAdapterPosition(child);
 
-            View leftLookup = parent.getLayoutManager().findViewByPosition(i - 1).findViewById(R.id.textViewRepsPrimary);
+            if(adapterPos == RecyclerView.NO_POSITION || adapterPos + 1 >= items.size()){
+                continue;
+            }
+
+            View viewAtPos = parent.getLayoutManager().findViewByPosition(adapterPos);
+            if (viewAtPos == null) {
+                continue;
+            }
+
+            boolean isSecondary = items.get(adapterPos + 1);
+
+            View leftLookup = viewAtPos.findViewById(R.id.textViewRepsPrimary);
+            if(leftLookup == null){
+                continue;
+            }
+
             float left = leftLookup.getLeft() - extraMargin;
             float right;
-            Log.d("DDID", String.valueOf(items.get(i)));
-            if(items.get(i)){
-                right = parent.getLayoutManager().findViewByPosition(i - 1).findViewById(R.id.textViewRepsSecondary).getRight() + extraMargin;
-                Log.d("DDID", "Boolean is TRUE");
+
+            if(isSecondary){
+                View secLiteral = viewAtPos.findViewById(R.id.textViewRepsSecLiteral);
+                right = secLiteral != null ? secLiteral.getRight() + extraMargin : left;
             } else {
                 right = leftLookup.getRight() + extraMargin;
-                Log.d("DDID", "Boolean is FALSE");
             }
 
             float top = child.getBottom();

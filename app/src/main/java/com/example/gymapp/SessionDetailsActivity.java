@@ -117,8 +117,6 @@ public class SessionDetailsActivity extends AppCompatActivity {
                 seOrderMap.put(se.getExerciseOrder(), sessionExerciseMap.get(se));
             }
 
-            Log.d("SDAC", seOrderMap.toString());
-
             recyclerView.addItemDecoration(new DetailsDividerItemDecoration(
                     this,
                     dividerColor,

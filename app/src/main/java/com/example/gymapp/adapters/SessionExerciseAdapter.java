@@ -76,9 +76,9 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
 
 
         holder.repsSecondaryText.setVisibility(View.VISIBLE);
+        holder.repsPrimaryTextLiteral.setVisibility(View.VISIBLE);
         holder.repsPrimaryText.setVisibility(View.VISIBLE);
-
-        //ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) holder.repsPrimaryText.getLayoutParams();
+        holder.repsSecondaryTextLiteral.setVisibility(View.VISIBLE);
 
         constraintLayout = holder.layout;
         ConstraintSet set = new ConstraintSet();
@@ -86,26 +86,32 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
 
         if(exerciseMeta != null && exerciseMeta.getSplit()) {
             // the exercise IS split
-            holder.repsPrimaryText.setText(exercise.getRepsPrimary() + " reps");
-            holder.repsSecondaryText.setText(exercise.getRepsSecondary() + " reps");
+            holder.repsPrimaryText.setText( String.valueOf( exercise.getRepsPrimary() ) );
+            holder.repsSecondaryText.setText( String.valueOf( exercise.getRepsSecondary() ) );
 
-            set.connect(R.id.textViewRepsPrimary, ConstraintSet.END, R.id.textViewWeight, ConstraintSet.START);
+            set.connect(R.id.textViewRepsPriLiteral, ConstraintSet.END, R.id.textViewWeight, ConstraintSet.START);
+            set.connect(R.id.textViewRepsPrimary, ConstraintSet.END, R.id.textViewRepsPriLiteral, ConstraintSet.START);
             set.clear(R.id.textViewRepsPrimary, ConstraintSet.START);
             set.applyTo(constraintLayout);
 
         } else {
             // the exercise IS NOT split
-            set.connect(R.id.textViewRepsPrimary, ConstraintSet.END, R.id.textViewWeight, ConstraintSet.END);
+            holder.repsPrimaryTextLiteral.setVisibility(View.GONE);
+            holder.repsPrimaryTextLiteral.setText("");
             set.connect(R.id.textViewRepsPrimary, ConstraintSet.START, R.id.textViewWeight, ConstraintSet.START);
+            set.connect(R.id.textViewRepsPrimary, ConstraintSet.END, R.id.textViewLbs, ConstraintSet.END);
+            holder.repsPrimaryText.setText(exercise.getRepsPrimary() + " reps");
+
             set.applyTo(constraintLayout);
 
             holder.repsSecondaryText.setVisibility(View.INVISIBLE);
-            holder.repsPrimaryText.setText(exercise.getRepsPrimary() + " reps");
+            holder.repsSecondaryTextLiteral.setVisibility(View.INVISIBLE);
+//            holder.repsPrimaryText.setText( String.valueOf( exercise.getRepsPrimary() ) );
 
         }
 
         holder.nameText.setText(exercise.getName());
-        holder.weightText.setText(df.format(exercise.getWeight()) + " lbs");
+        holder.weightText.setText( df.format( exercise.getWeight() ) );
         // End Formatting //
 
         // Defining Touch Events //
@@ -142,14 +148,16 @@ public class SessionExerciseAdapter extends RecyclerView.Adapter<SessionExercise
 
     static class SessionExerciseViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout layout;
-        TextView nameText, repsPrimaryText, repsSecondaryText, weightText;
+        TextView nameText, repsPrimaryText, repsPrimaryTextLiteral, repsSecondaryText, repsSecondaryTextLiteral, weightText;
         ImageView dragHandle;
         SessionExerciseViewHolder(View itemView) {
             super(itemView);
             layout = itemView.findViewById(R.id.listItemSessionExerciseLayout);
             nameText = itemView.findViewById(R.id.textViewExerciseName);
             repsPrimaryText = itemView.findViewById(R.id.textViewRepsPrimary);
+            repsPrimaryTextLiteral = itemView.findViewById(R.id.textViewRepsPriLiteral);
             repsSecondaryText = itemView.findViewById(R.id.textViewRepsSecondary);
+            repsSecondaryTextLiteral = itemView.findViewById(R.id.textViewRepsSecLiteral);
             weightText = itemView.findViewById(R.id.textViewWeight);
             dragHandle = itemView.findViewById(R.id.dragHandle);
         }
