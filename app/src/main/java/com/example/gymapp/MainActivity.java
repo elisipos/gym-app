@@ -19,11 +19,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gymapp.adapters.ExerciseAdapter;
 import com.example.gymapp.adapters.SessionAdapter;
+import com.example.gymapp.item_decoration.SelectedDayDecorator;
+import com.example.gymapp.item_decoration.SessionDecorator;
 import com.example.gymapp.models.Exercise;
 import com.example.gymapp.models.Session;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
     private EditDialogHelper editDialogHelper;
 
     private TabLayout tabLayout;
-    private ListView listView;
+//    private ListView listView;
     private RecyclerView recyclerView;
     private FloatingActionButton newEntryBtn;
     private ExerciseAdapter exerciseAdapter;
-    private CalendarView calendarView;
+    private MaterialCalendarView calendarView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
         newEntryBtn = findViewById(R.id.newEntryBtn);
 
         tabLayout = findViewById(R.id.tabLayout);
-        listView = findViewById(R.id.listViewElem);
+//        listView = findViewById(R.id.listViewElem);
+        MaterialCalendarView calendarView = findViewById(R.id.calendarView);
         recyclerView = findViewById(R.id.exerciseRecyclerView);
 
 
@@ -71,14 +78,39 @@ public class MainActivity extends AppCompatActivity {
 
         List<Session> sessions = sda.getSessions();
 
+        List<CalendarDay> sessionDays = new ArrayList<>();
+
+        for(Session s : sessions){
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(s.getDate());
+
+            sessionDays.add(CalendarDay.from(
+                    cal.get(Calendar.YEAR),
+                    cal.get(Calendar.MONTH),
+                    cal.get(Calendar.DAY_OF_MONTH)
+            ));
+        }
+
+        CalendarDay today = CalendarDay.today();
+
+        SelectedDayDecorator decorator = new SelectedDayDecorator(this);
+        calendarView.addDecorator(decorator);
+        calendarView.setOnDateChangedListener(((widget, date, selected) -> {
+            decorator.setDate(date);
+            widget.invalidateDecorators();
+        }));
+        calendarView.addDecorator(new SessionDecorator(sessionDays, this));
+        /*
         SessionAdapter adapter = new SessionAdapter(this, sessions);
         listView.setAdapter(adapter);
+
 
         listView.setOnItemLongClickListener((parent, view, position, id) -> {
             Session clickedSession = (Session) parent.getItemAtPosition(position);
             showSessionOptionsPopup(view, clickedSession);
             return true;
         });
+        */
 
         tabLayout.selectTab(tabLayout.getTabAt(0));
 //        listView.setVisibility(View.VISIBLE);
