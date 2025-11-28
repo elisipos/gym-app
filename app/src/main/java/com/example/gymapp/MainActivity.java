@@ -3,6 +3,7 @@ package com.example.gymapp;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CalendarView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FloatingActionButton newEntryBtn;
     private ExerciseAdapter exerciseAdapter;
+    private CalendarView calendarView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.listViewElem);
         recyclerView = findViewById(R.id.exerciseRecyclerView);
 
+
         TextView welcomeView = findViewById(R.id.welcomeTxt);
         welcomeView.setText("Welcome (MainActivity)");
 
@@ -78,18 +81,23 @@ public class MainActivity extends AppCompatActivity {
         });
 
         tabLayout.selectTab(tabLayout.getTabAt(0));
-        listView.setVisibility(View.VISIBLE);
+//        listView.setVisibility(View.VISIBLE);
+//        calendarView.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
+
+
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 int position = tab.getPosition();
                 if (position == 0){
-                    listView.setVisibility(View.VISIBLE);
+//                    listView.setVisibility(View.VISIBLE);
+//                    calendarView.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
                 } else if (position == 1) {
-                    listView.setVisibility(View.GONE);
+//                    listView.setVisibility(View.GONE);
+//                    calendarView.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
                     loadExerciseRecycler();
                 }
