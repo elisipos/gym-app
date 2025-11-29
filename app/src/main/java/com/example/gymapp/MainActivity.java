@@ -30,6 +30,7 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -100,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
             widget.invalidateDecorators();
         }));
         calendarView.addDecorator(new SessionDecorator(sessionDays, this));
+
+        decorator.setDate(CalendarDay.today());
         /*
         SessionAdapter adapter = new SessionAdapter(this, sessions);
         listView.setAdapter(adapter);
