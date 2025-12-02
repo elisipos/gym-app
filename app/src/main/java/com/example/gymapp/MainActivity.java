@@ -2,6 +2,7 @@ package com.example.gymapp;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gymapp.adapters.ExerciseAdapter;
 
+import com.example.gymapp.adapters.SessionAdapter;
 import com.example.gymapp.item_decoration.SelectedDayDecorator;
 import com.example.gymapp.item_decoration.SessionDecorator;
 import com.example.gymapp.models.Exercise;
@@ -31,6 +33,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -48,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView dateTextView;
     private FloatingActionButton newEntryBtn;
     private ExerciseAdapter exerciseAdapter;
+    private SessionAdapter sessionAdapter;
     private MaterialCalendarView calendarView;
 
     @Override
@@ -96,12 +101,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         CalendarDay today = CalendarDay.today();
+        AtomicReference<CalendarDay> selectedDay = new AtomicReference<>();
 
         SelectedDayDecorator decorator = new SelectedDayDecorator(this);
         calendarView.addDecorator(decorator);
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM d, yyyy");
         dateTextView.setText(dateFormat.format(today.getDate()));
         calendarView.setOnDateChangedListener(((widget, date, selected) -> {
+            selectedDay.set(date);
+            loadSessionRecycler(sessions, selectedDay.get());
             String formattedDate = dateFormat.format(date.getDate());
             dateTextView.setText(formattedDate);
 
@@ -110,7 +118,8 @@ public class MainActivity extends AppCompatActivity {
         }));
         calendarView.addDecorator(new SessionDecorator(sessionDays, this));
 
-        decorator.setDate(CalendarDay.today());
+        decorator.setDate(today);
+        loadSessionRecycler(sessions, today);
         /*
         SessionAdapter adapter = new SessionAdapter(this, sessions);
         listView.setAdapter(adapter);
@@ -142,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
                     dateTextView.setVisibility(View.VISIBLE);
                     sessionListRecyclerView.setVisibility(View.VISIBLE);
                     exerciseRecyclerView.setVisibility(View.GONE);
+                    loadSessionRecycler(sessions, selectedDay.get());
                 } else if (position == 1) {
 //                    listView.setVisibility(View.GONE);
                     calendarView.setVisibility(View.GONE);
@@ -232,6 +242,22 @@ public class MainActivity extends AppCompatActivity {
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         exerciseRecyclerView.addItemDecoration(itemDecoration);
         exerciseRecyclerView.setAdapter(exerciseAdapter);
+    }
+    private void loadSessionRecycler(List<Session> sessions, CalendarDay date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-d-yyyy");
+        List<Session> daySpecificSessions = new ArrayList<>();
+        String sFormatted;
+        String dFormatted;
+        for(Session s : sessions){
+            sFormatted = sdf.format( s.getDate() );
+            dFormatted = sdf.format( date.getDate().getTime() );
+            if(Objects.equals(sFormatted, dFormatted)){
+                daySpecificSessions.add(s);
+            }
+        }
+        sessionAdapter = new SessionAdapter(this, daySpecificSessions);
+        sessionListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        sessionListRecyclerView.setAdapter(sessionAdapter);
     }
 
     private void handleDialogHelperUpdate(boolean isAffectingExercises) {

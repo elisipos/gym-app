@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gymapp.R;
 import com.example.gymapp.SessionDetailsActivity;
@@ -22,41 +23,34 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class SessionAdapter extends ArrayAdapter<Session> {
+public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionViewHolder> {
     private Context context;
     private List<Session> sessions;
 
     private SimpleDateFormat sdf;
 
     public SessionAdapter(Context context, List<Session> sessions) {
-        super(context, 0, sessions);
         this.context = context;
         this.sessions = sessions;
     }
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // Reuse old view if possible
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_session, parent, false);
-        }
+    public SessionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.list_item_session, parent, false);
+        return new SessionViewHolder(view);
+    }
 
-        // Get the current Session
+    @Override
+    public void onBindViewHolder(@NonNull SessionViewHolder holder, int position) {
         Session session = sessions.get(position);
-
-        // Bind data
-        TextView nameText = convertView.findViewById(R.id.sessionNameText);
-        TextView dateText = convertView.findViewById(R.id.sessionDateText);
 
         sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
 
-        nameText.setText(String.valueOf(session.getName()));
-        dateText.setText(sdf.format(session.getDate()));
+        holder.sessionName.setText(String.valueOf(session.getName()));
+        holder.sessionDate.setText(sdf.format(session.getDate()));
 
-        convertView.setLongClickable(true);
-
-        convertView.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(context, SessionDetailsActivity.class);
@@ -64,7 +58,20 @@ public class SessionAdapter extends ArrayAdapter<Session> {
                 context.startActivity(i);
             }
         });
+    }
 
-        return convertView;
+    @Override
+    public int getItemCount() {
+        return sessions.size();
+    }
+
+    static class SessionViewHolder extends RecyclerView.ViewHolder {
+        TextView sessionName;
+        TextView sessionDate;
+        public SessionViewHolder(@NonNull View itemView) {
+            super(itemView);
+            sessionName = itemView.findViewById(R.id.sessionNameText);
+            sessionDate = itemView.findViewById(R.id.sessionDateText);
+        }
     }
 }
