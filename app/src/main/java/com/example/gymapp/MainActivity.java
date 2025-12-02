@@ -3,8 +3,6 @@ package com.example.gymapp;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CalendarView;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -18,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gymapp.adapters.ExerciseAdapter;
-import com.example.gymapp.adapters.SessionAdapter;
+
 import com.example.gymapp.item_decoration.SelectedDayDecorator;
 import com.example.gymapp.item_decoration.SessionDecorator;
 import com.example.gymapp.models.Exercise;
@@ -28,10 +26,12 @@ import com.google.android.material.tabs.TabLayout;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,7 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
 //    private ListView listView;
-    private RecyclerView recyclerView;
+    private RecyclerView exerciseRecyclerView;
+    private RecyclerView sessionListRecyclerView;
+    private TextView dateTextView;
     private FloatingActionButton newEntryBtn;
     private ExerciseAdapter exerciseAdapter;
     private MaterialCalendarView calendarView;
@@ -70,9 +72,10 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout = findViewById(R.id.tabLayout);
 //        listView = findViewById(R.id.listViewElem);
-        MaterialCalendarView calendarView = findViewById(R.id.calendarView);
-        recyclerView = findViewById(R.id.exerciseRecyclerView);
-
+        calendarView = findViewById(R.id.calendarView);
+        exerciseRecyclerView = findViewById(R.id.exerciseRecyclerView);
+        sessionListRecyclerView = findViewById(R.id.sessionListRecyclerView);
+        dateTextView = findViewById(R.id.dateTextView);
 
         TextView welcomeView = findViewById(R.id.welcomeTxt);
         welcomeView.setText("Welcome (MainActivity)");
@@ -96,7 +99,12 @@ public class MainActivity extends AppCompatActivity {
 
         SelectedDayDecorator decorator = new SelectedDayDecorator(this);
         calendarView.addDecorator(decorator);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM d, yyyy");
+        dateTextView.setText(dateFormat.format(today.getDate()));
         calendarView.setOnDateChangedListener(((widget, date, selected) -> {
+            String formattedDate = dateFormat.format(date.getDate());
+            dateTextView.setText(formattedDate);
+
             decorator.setDate(date);
             widget.invalidateDecorators();
         }));
@@ -117,8 +125,10 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout.selectTab(tabLayout.getTabAt(0));
 //        listView.setVisibility(View.VISIBLE);
-//        calendarView.setVisibility(View.VISIBLE);
-        recyclerView.setVisibility(View.GONE);
+        calendarView.setVisibility(View.VISIBLE);
+        dateTextView.setVisibility(View.VISIBLE);
+        sessionListRecyclerView.setVisibility(View.VISIBLE);
+        exerciseRecyclerView.setVisibility(View.GONE);
 
 
 
@@ -128,12 +138,16 @@ public class MainActivity extends AppCompatActivity {
                 int position = tab.getPosition();
                 if (position == 0){
 //                    listView.setVisibility(View.VISIBLE);
-//                    calendarView.setVisibility(View.VISIBLE);
-                    recyclerView.setVisibility(View.GONE);
+                    calendarView.setVisibility(View.VISIBLE);
+                    dateTextView.setVisibility(View.VISIBLE);
+                    sessionListRecyclerView.setVisibility(View.VISIBLE);
+                    exerciseRecyclerView.setVisibility(View.GONE);
                 } else if (position == 1) {
 //                    listView.setVisibility(View.GONE);
-//                    calendarView.setVisibility(View.GONE);
-                    recyclerView.setVisibility(View.VISIBLE);
+                    calendarView.setVisibility(View.GONE);
+                    dateTextView.setVisibility(View.GONE);
+                    sessionListRecyclerView.setVisibility(View.GONE);
+                    exerciseRecyclerView.setVisibility(View.VISIBLE);
                     loadExerciseRecycler();
                 }
             }
@@ -214,10 +228,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        exerciseRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(itemDecoration);
-        recyclerView.setAdapter(exerciseAdapter);
+        exerciseRecyclerView.addItemDecoration(itemDecoration);
+        exerciseRecyclerView.setAdapter(exerciseAdapter);
     }
 
     private void handleDialogHelperUpdate(boolean isAffectingExercises) {

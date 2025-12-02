@@ -1,13 +1,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="12dp">
+    android:orientation="horizontal"
+    android:background="@drawable/session_button_background"
+    android:gravity="center"
+    android:padding="16dp"
+    android:weightSum="1">
 
     <TextView
         android:id="@+id/sessionNameText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="SessionName"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -15,7 +20,9 @@
         android:id="@+id/sessionDateText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="#666" />
+        android:layout_weight="1"
+        android:text="12-1-25"
+        android:textColor="#666"
+        android:textSize="14sp" />
 
 </LinearLayout>
