@@ -16,12 +16,20 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class SessionDecorator implements DayViewDecorator {
-    private final HashSet<CalendarDay> dates;
+    private HashSet<CalendarDay> dates;
     private final Drawable highlight;
 
     public SessionDecorator(Collection<CalendarDay> dates, Context context) {
         this.dates = new HashSet<>(dates);
         this.highlight = ContextCompat.getDrawable(context, R.drawable.session_day_background);
+    }
+
+    public SessionDecorator(Context context) {
+        this.highlight = ContextCompat.getDrawable(context, R.drawable.session_day_background);
+    }
+
+    public void setDates(Collection<CalendarDay> dates) {
+        this.dates = new HashSet<>(dates);
     }
 
     @Override

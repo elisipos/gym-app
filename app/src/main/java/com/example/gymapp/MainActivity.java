@@ -8,6 +8,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -54,6 +55,52 @@ public class MainActivity extends AppCompatActivity {
     private ExerciseAdapter exerciseAdapter;
     private SessionAdapter sessionAdapter;
     private MaterialCalendarView calendarView;
+    private CalendarHelper calendarHelper;
+
+    private class CalendarHelper {
+        CalendarDay today = CalendarDay.today();
+        AtomicReference<CalendarDay> selectedDay = new AtomicReference<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM d, yyyy");
+        SelectedDayDecorator decorator = new SelectedDayDecorator(this); //TODO: Probably move CalendarHelper into it's own file and just instantiate one here, finish implementing the decorators.
+        SessionDecorator sessionDecorator = new SessionDecorator(this);
+
+        private void setSelectedDay(CalendarDay day) {
+            selectedDay.set(day);
+        }
+        private List<CalendarDay> getSessionDays() {
+            List<CalendarDay> sessionDays = new ArrayList<>();
+            List<Session> sessions = sda.getSessions();
+
+            for(Session s : sessions){
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(s.getDate());
+
+                sessionDays.add(CalendarDay.from(
+                        cal.get(Calendar.YEAR),
+                        cal.get(Calendar.MONTH),
+                        cal.get(Calendar.DAY_OF_MONTH)
+                ));
+            }
+            return sessionDays;
+        }
+
+        public void refresh() {
+            List<Session> sessions = sda.getSessions();
+            List<CalendarDay> sessionDays = getSessionDays();
+
+            loadSessionRecycler(sessions, selectedDay.get());
+
+            calendarView.removeDecorators();
+            decorator.setDate(selectedDay.get());
+            calendarView.addDecorator(decorator);
+
+            sessionDecorator.setDates(sessionDays);
+            calendarView.addDecorator(sessionDecorator);
+
+            dateTextView.setText(dateFormat.format(selectedDay.get().getDate()));
+            calendarView.invalidateDecorators();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,50 +134,14 @@ public class MainActivity extends AppCompatActivity {
 
         List<Session> sessions = sda.getSessions();
 
-        List<CalendarDay> sessionDays = new ArrayList<>();
+        calendarHelper = new CalendarHelper();
+        calendarHelper.setSelectedDay(CalendarDay.today());
+        calendarHelper.refresh();
 
-        for(Session s : sessions){
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(s.getDate());
-
-            sessionDays.add(CalendarDay.from(
-                    cal.get(Calendar.YEAR),
-                    cal.get(Calendar.MONTH),
-                    cal.get(Calendar.DAY_OF_MONTH)
-            ));
-        }
-
-        CalendarDay today = CalendarDay.today();
-        AtomicReference<CalendarDay> selectedDay = new AtomicReference<>();
-
-        SelectedDayDecorator decorator = new SelectedDayDecorator(this);
-        calendarView.addDecorator(decorator);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM d, yyyy");
-        dateTextView.setText(dateFormat.format(today.getDate()));
         calendarView.setOnDateChangedListener(((widget, date, selected) -> {
-            selectedDay.set(date);
-            loadSessionRecycler(sessions, selectedDay.get());
-            String formattedDate = dateFormat.format(date.getDate());
-            dateTextView.setText(formattedDate);
-
-            decorator.setDate(date);
-            widget.invalidateDecorators();
+            calendarHelper.setSelectedDay(date);
+            calendarHelper.refresh();
         }));
-        calendarView.addDecorator(new SessionDecorator(sessionDays, this));
-
-        decorator.setDate(today);
-        loadSessionRecycler(sessions, today);
-        /*
-        SessionAdapter adapter = new SessionAdapter(this, sessions);
-        listView.setAdapter(adapter);
-
-
-        listView.setOnItemLongClickListener((parent, view, position, id) -> {
-            Session clickedSession = (Session) parent.getItemAtPosition(position);
-            showSessionOptionsPopup(view, clickedSession);
-            return true;
-        });
-        */
 
         tabLayout.selectTab(tabLayout.getTabAt(0));
 //        listView.setVisibility(View.VISIBLE);
@@ -151,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                     dateTextView.setVisibility(View.VISIBLE);
                     sessionListRecyclerView.setVisibility(View.VISIBLE);
                     exerciseRecyclerView.setVisibility(View.GONE);
-                    loadSessionRecycler(sessions, selectedDay.get());
+                    loadSessionRecycler(sessions, calendarHelper.selectedDay.get());
                 } else if (position == 1) {
 //                    listView.setVisibility(View.GONE);
                     calendarView.setVisibility(View.GONE);
@@ -257,14 +268,23 @@ public class MainActivity extends AppCompatActivity {
         }
         sessionAdapter = new SessionAdapter(this, daySpecificSessions);
         sessionListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        sessionAdapter.setSessionLongClickListener(new SessionAdapter.OnSessionLongClickListener() {
+            @Override
+            public void onSessionLongClick(long sessionId, View view) {
+                showSessionOptionsPopup(view, sda.getSessionById(sessionId));
+            }
+        });
+
         sessionListRecyclerView.setAdapter(sessionAdapter);
     }
 
     private void handleDialogHelperUpdate(boolean isAffectingExercises) {
         if(!isAffectingExercises) {
-            recreate();
+            calendarHelper.refresh();
         }else{
             loadExerciseRecycler();
         }
     }
+
 }

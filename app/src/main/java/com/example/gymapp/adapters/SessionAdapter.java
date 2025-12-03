@@ -26,12 +26,20 @@ import java.util.Locale;
 public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionViewHolder> {
     private Context context;
     private List<Session> sessions;
-
     private SimpleDateFormat sdf;
+    private OnSessionLongClickListener longClickListener;
 
     public SessionAdapter(Context context, List<Session> sessions) {
         this.context = context;
         this.sessions = sessions;
+    }
+
+    public interface OnSessionLongClickListener {
+        void onSessionLongClick(long sessionId, View view);
+    }
+
+    public void setSessionLongClickListener(OnSessionLongClickListener listener) {
+        this.longClickListener = listener;
     }
 
     @NonNull
@@ -57,6 +65,14 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionV
                 i.putExtra("session_id", session.getId());
                 context.startActivity(i);
             }
+        });
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if(longClickListener != null) {
+                longClickListener.onSessionLongClick(session.getId(), v);
+                return true;
+            }
+            return false;
         });
     }
 
