@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
-    android:insetBottom="13dp"
-    android:insetTop="41dp"
-    android:insetRight="27dp"
-    android:insetLeft="27dp">
+    android:insetBottom="9dp"
+    android:insetTop="35dp"
+    android:insetRight="22dp"
+    android:insetLeft="22dp">
     <shape android:shape="oval">
         <solid android:color="#A6002AFF" />
-        <size android:width="50dp" android:height="50dp" />
+<!--        <size android:width="50dp" android:height="50dp" />-->
     </shape>
 </inset>
