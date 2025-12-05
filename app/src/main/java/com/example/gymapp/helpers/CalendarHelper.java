@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gymapp.SessionDataAccess;
 import com.example.gymapp.adapters.SessionAdapter;
+import com.example.gymapp.item_decoration.CurrentDayDecorator;
 import com.example.gymapp.item_decoration.SelectedDayDecorator;
 import com.example.gymapp.item_decoration.SessionDecorator;
 import com.example.gymapp.models.Session;
@@ -31,8 +32,9 @@ public class CalendarHelper {
     SessionAdapter sessionAdapter;
     private final CalendarCallback callback;
 
-    SelectedDayDecorator decorator;
+    SelectedDayDecorator selectedDayDecorator;
     SessionDecorator sessionDecorator;
+    CurrentDayDecorator currentDayDecorator;
 
     CalendarDay today = CalendarDay.today();
     public AtomicReference<CalendarDay> selectedDay = new AtomicReference<>();
@@ -51,8 +53,9 @@ public class CalendarHelper {
         this.sessionListRecyclerView = sessionListRecyclerView;
         this.callback = callback;
         this.context = context;
-        this.decorator = new SelectedDayDecorator(context);
+        this.selectedDayDecorator = new SelectedDayDecorator(context);
         this.sessionDecorator = new SessionDecorator(context);
+        this.currentDayDecorator = new CurrentDayDecorator(context);
     }
 
     public void setSelectedDay(CalendarDay day) {
@@ -86,8 +89,9 @@ public class CalendarHelper {
         loadSessionRecycler(sessions, selectedDay.get());
 
         calendarView.removeDecorators();
-        decorator.setDate(selectedDay.get());
-        calendarView.addDecorator(decorator);
+        selectedDayDecorator.setDate(selectedDay.get());
+        calendarView.addDecorator(currentDayDecorator);
+        calendarView.addDecorator(selectedDayDecorator);
 
         sessionDecorator.setDates(sessionDays);
         calendarView.addDecorator(sessionDecorator);

@@ -21,6 +21,7 @@ import com.example.gymapp.SessionExerciseDataAccess;
 import com.example.gymapp.models.Exercise;
 import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -368,17 +369,17 @@ public class EditDialogHelper {
 
         sessionDate.set(s.getDate());
 
-        sessionDateInput.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showCalendarView(sessionDate, sdf, sessionDateInput);
-            }
-        });
+//        sessionDateInput.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showCalendarView(sessionDate, sdf, sessionDateInput);
+//            }
+//        });
 
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(dialogNewSessionView)
 
-                .setPositiveButton("OK", null) // Overridden once the dialog appears below.
+                .setPositiveButton("OK", null)
                 .setNegativeButton("Cancel", (d, i) -> d.dismiss())
                 .create();
 
@@ -557,25 +558,26 @@ public class EditDialogHelper {
         });
     }
 
-    public void showEditDialogSession() {
+    public void showEditDialogSession(CalendarHelper helper) {
         View dialogView = inflater.inflate(R.layout.dialog_new_session, null);
 
         EditText sessionNameInput = dialogView.findViewById(R.id.inputSessionName);
         EditText sessionDateInput = dialogView.findViewById(R.id.inputSessionDate);
 
-        long nowMillis = System.currentTimeMillis();
+//        long nowMillis = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
-        String todayFormatted = sdf.format(new Date(nowMillis));
-        sessionDateInput.setText(todayFormatted);
+//        String todayFormatted = sdf.format(new Date(nowMillis));
+        String selectedDayFormatted = sdf.format( helper.getSelectedDay().getDate() );
+        sessionDateInput.setText(selectedDayFormatted);
 
         AtomicLong sessionDate = new AtomicLong(new Date().getTime());
 
-        sessionDateInput.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showCalendarView(sessionDate, sdf, sessionDateInput);
-            }
-        });
+//        sessionDateInput.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showCalendarView(sessionDate, sdf, sessionDateInput);
+//            }
+//        });
 
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(dialogView)

@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
             public void onClick(View v) {
                 int position = tabLayout.getSelectedTabPosition();
                 if(position == 0){
-                    editDialogHelper.showEditDialogSession();
+                    editDialogHelper.showEditDialogSession(calendarHelper);
                 }else if(position == 1){
                     editDialogHelper.showEditDialogExercise();
                 }
