@@ -3,7 +3,6 @@ package com.example.gymapp;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gymapp.adapters.ExerciseAdapter;
+import com.example.gymapp.helpers.MyDatabaseHelper;
 import com.example.gymapp.models.Exercise;
 
 import java.util.List;

@@ -1,34 +1,33 @@
-package com.example.gymapp;
+package com.example.gymapp.helpers;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
+import com.example.gymapp.ExerciseDataAccess;
+import com.example.gymapp.R;
+import com.example.gymapp.SessionDataAccess;
+import com.example.gymapp.SessionExerciseDataAccess;
 import com.example.gymapp.models.Exercise;
 import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class EditDialogHelper {
     private final Context context;

@@ -2,13 +2,11 @@ package com.example.gymapp;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -20,6 +18,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.gymapp.adapters.ExerciseAdapter;
 
 import com.example.gymapp.adapters.SessionAdapter;
+import com.example.gymapp.helpers.CalendarCallback;
+import com.example.gymapp.helpers.CalendarHelper;
+import com.example.gymapp.helpers.EditDialogHelper;
+import com.example.gymapp.helpers.MyDatabaseHelper;
 import com.example.gymapp.item_decoration.SelectedDayDecorator;
 import com.example.gymapp.item_decoration.SessionDecorator;
 import com.example.gymapp.models.Exercise;
@@ -38,7 +40,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CalendarCallback {
 
     private MyDatabaseHelper dbHelper;
 
@@ -57,50 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private MaterialCalendarView calendarView;
     private CalendarHelper calendarHelper;
 
-    private class CalendarHelper {
-        CalendarDay today = CalendarDay.today();
-        AtomicReference<CalendarDay> selectedDay = new AtomicReference<>();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM d, yyyy");
-        SelectedDayDecorator decorator = new SelectedDayDecorator(this); //TODO: Probably move CalendarHelper into it's own file and just instantiate one here, finish implementing the decorators.
-        SessionDecorator sessionDecorator = new SessionDecorator(this);
 
-        private void setSelectedDay(CalendarDay day) {
-            selectedDay.set(day);
-        }
-        private List<CalendarDay> getSessionDays() {
-            List<CalendarDay> sessionDays = new ArrayList<>();
-            List<Session> sessions = sda.getSessions();
-
-            for(Session s : sessions){
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(s.getDate());
-
-                sessionDays.add(CalendarDay.from(
-                        cal.get(Calendar.YEAR),
-                        cal.get(Calendar.MONTH),
-                        cal.get(Calendar.DAY_OF_MONTH)
-                ));
-            }
-            return sessionDays;
-        }
-
-        public void refresh() {
-            List<Session> sessions = sda.getSessions();
-            List<CalendarDay> sessionDays = getSessionDays();
-
-            loadSessionRecycler(sessions, selectedDay.get());
-
-            calendarView.removeDecorators();
-            decorator.setDate(selectedDay.get());
-            calendarView.addDecorator(decorator);
-
-            sessionDecorator.setDates(sessionDays);
-            calendarView.addDecorator(sessionDecorator);
-
-            dateTextView.setText(dateFormat.format(selectedDay.get().getDate()));
-            calendarView.invalidateDecorators();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +93,13 @@ public class MainActivity extends AppCompatActivity {
 
         List<Session> sessions = sda.getSessions();
 
-        calendarHelper = new CalendarHelper();
+        calendarHelper = new CalendarHelper(
+                calendarView,
+                dateTextView,
+                sda,
+                sessionListRecyclerView,
+                this::showSessionOptionsPopup,
+                this);
         calendarHelper.setSelectedDay(CalendarDay.today());
         calendarHelper.refresh();
 
@@ -150,8 +115,6 @@ public class MainActivity extends AppCompatActivity {
         sessionListRecyclerView.setVisibility(View.VISIBLE);
         exerciseRecyclerView.setVisibility(View.GONE);
 
-
-
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -162,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                     dateTextView.setVisibility(View.VISIBLE);
                     sessionListRecyclerView.setVisibility(View.VISIBLE);
                     exerciseRecyclerView.setVisibility(View.GONE);
-                    loadSessionRecycler(sessions, calendarHelper.selectedDay.get());
+                    calendarHelper.loadSessionRecycler(sessions, calendarHelper.getSelectedDay());
                 } else if (position == 1) {
 //                    listView.setVisibility(View.GONE);
                     calendarView.setVisibility(View.GONE);
@@ -194,7 +157,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void showSessionOptionsPopup(View anchor, Session session) {
+    @Override
+    public void showSessionOptionsPopup(View anchor, Session session) {
         PopupMenu popup = new PopupMenu(this, anchor);
         popup.getMenuInflater().inflate(R.menu.list_item_options_menu, popup.getMenu());
 
@@ -207,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.action_delete) {
                 // handle remove
                 sda.deleteSession(session.getId());
-                recreate();
+                calendarHelper.refresh();
                 return true;
             }
             return false;
@@ -253,30 +217,6 @@ public class MainActivity extends AppCompatActivity {
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         exerciseRecyclerView.addItemDecoration(itemDecoration);
         exerciseRecyclerView.setAdapter(exerciseAdapter);
-    }
-    private void loadSessionRecycler(List<Session> sessions, CalendarDay date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("MM-d-yyyy");
-        List<Session> daySpecificSessions = new ArrayList<>();
-        String sFormatted;
-        String dFormatted;
-        for(Session s : sessions){
-            sFormatted = sdf.format( s.getDate() );
-            dFormatted = sdf.format( date.getDate().getTime() );
-            if(Objects.equals(sFormatted, dFormatted)){
-                daySpecificSessions.add(s);
-            }
-        }
-        sessionAdapter = new SessionAdapter(this, daySpecificSessions);
-        sessionListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        sessionAdapter.setSessionLongClickListener(new SessionAdapter.OnSessionLongClickListener() {
-            @Override
-            public void onSessionLongClick(long sessionId, View view) {
-                showSessionOptionsPopup(view, sda.getSessionById(sessionId));
-            }
-        });
-
-        sessionListRecyclerView.setAdapter(sessionAdapter);
     }
 
     private void handleDialogHelperUpdate(boolean isAffectingExercises) {
