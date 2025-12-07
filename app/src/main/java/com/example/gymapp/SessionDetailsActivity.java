@@ -67,44 +67,51 @@ public class SessionDetailsActivity extends AppCompatActivity {
             return insets;
         });
 
+
+    /* Instantiating lines */
+
         dbHelper = new MyDatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         sda = new SessionDataAccess(db);
         seda = new SessionExerciseDataAccess(db);
         eda = new ExerciseDataAccess(db);
-        sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
 
-        editDialogHelper = new EditDialogHelper(this, seda, eda, sda, (res) -> recreate());
+        sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
 
         TextView sessionNameText = findViewById(R.id.sessionNameText);
         TextView sessionDateText = findViewById(R.id.sessionDateText);
-
         RecyclerView recyclerView = findViewById(R.id.sessionRecyclerView);
+        FloatingActionButton addExerciseBtn = findViewById(R.id.addExerciseBtn);
+
+        editDialogHelper = new EditDialogHelper(this, seda, eda, sda, (res) -> recreate());
+
+
+    /* Title and date */
 
         sessionId = getIntent().getLongExtra("session_id", -1);
-
         if(sessionId != -1){
             Session session = sda.getSessionById(sessionId);
+
             sessionExerciseList = seda.getExercisesWithNamesBySessionId(sessionId);
             sessionExerciseMap = seda.getExerciseSplitMapBySessionId(sessionId);
+
             exerciseList = new ArrayList<>();
-            for(int i = 0; i < sessionExerciseList.size(); i++){
+            for(SessionExercise s : sessionExerciseList){
                 exerciseList.add(
-                        eda.getExerciseById(
-                                sessionExerciseList.get(i).getExerciseId()
-                        )
+                    eda.getExerciseById( s.getExerciseId() )
                 );
             }
 
             sessionNameText.setText(session.getName() + " (SessionDetails)");
             sessionDateText.setText(sdf.format(session.getDate()));
 
-            adapter = new SessionExerciseAdapter(this, sessionExerciseList, exerciseList);
+
+        /* RecyclerView function and formatting */
+
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
             int dividerColor = getResources().getColor(android.R.color.darker_gray);
             int dividerHeight = 3;
-
             recyclerView.addItemDecoration(new GroupDividerItemDecoration(
                     this,
                     dividerColor,
@@ -126,6 +133,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
                     seOrderMap
             ));
 
+            adapter = new SessionExerciseAdapter(this, sessionExerciseList, exerciseList);
             recyclerView.setAdapter(adapter);
 
             ItemTouchHelper.SimpleCallback callback =
@@ -144,30 +152,22 @@ public class SessionDetailsActivity extends AppCompatActivity {
                         adapter.notifyItemMoved(fromPos, toPos);
                         return true;
                     }
-
                     @Override
-                    public boolean isLongPressDragEnabled() {
-                        return false;
-                    }
-
+                    public boolean isLongPressDragEnabled() {return false;}
                     @Override
-                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                        // we’re not doing swipes here
-                    }
-
-
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {}
                 };
 
             ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
             itemTouchHelper.attachToRecyclerView(recyclerView);
             adapter.setItemTouchHelper(itemTouchHelper);
-            adapter.setOnExerciseLongClickListener(new SessionExerciseAdapter.OnExerciseLongClickListener() {
-                @Override
-                public void onExerciseLongClick(View view, int position) {
+            adapter.setOnExerciseLongClickListener((view, position) -> {
                     showPopupMenu(view, position);
-                }
             });
         }
+
+
+    /* Activity launcher for choosing exercise to add */
 
         addExerciseLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -175,7 +175,6 @@ public class SessionDetailsActivity extends AppCompatActivity {
                     if(result.getResultCode() == RESULT_OK) {
                         Intent data = result.getData();
                         if(data != null) {
-                            // Do thing with result.
                             long exerciseId = result.getData().getLongExtra("exercise_id", -1);
                             editDialogHelper.showEditDialog(eda.getExerciseById(exerciseId), sessionId);
                         }
@@ -183,15 +182,15 @@ public class SessionDetailsActivity extends AppCompatActivity {
                 }
         );
 
-        FloatingActionButton addExerciseBtn = findViewById(R.id.addExerciseBtn);
 
-        addExerciseBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showExerciseChoiceDialog();
-            }
+    /* Floating "+" button */
+
+        addExerciseBtn.setOnClickListener(v -> {
+            showExerciseChoiceDialog();
         });
     }
+
+/* Helper methods */
 
     private void showPopupMenu(View anchorView, int position) {
         PopupMenu popup = new PopupMenu(this, anchorView);
@@ -202,11 +201,9 @@ public class SessionDetailsActivity extends AppCompatActivity {
             SessionExercise selected = sessionExerciseList.get(position);
 
             if(itemId == R.id.action_edit) {
-                //EDIT
                 editExercise(selected);
                 return true;
             }else if(itemId == R.id.action_delete) {
-                //REMOVE
                 removeExercise(selected);
                 return true;
             }
