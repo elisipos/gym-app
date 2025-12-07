@@ -46,18 +46,18 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
 
     private SessionDataAccess sda;
     private ExerciseDataAccess eda;
-    private EditDialogHelper editDialogHelper;
 
     private TabLayout tabLayout;
-//    private ListView listView;
     private RecyclerView exerciseRecyclerView;
-    private RecyclerView sessionListRecyclerView;
-    private TextView dateTextView;
-    private FloatingActionButton newEntryBtn;
     private ExerciseAdapter exerciseAdapter;
+    private RecyclerView sessionListRecyclerView;
     private SessionAdapter sessionAdapter;
     private MaterialCalendarView calendarView;
     private CalendarHelper calendarHelper;
+    private TextView dateTextView;
+    private FloatingActionButton newEntryBtn;
+
+    private EditDialogHelper editDialogHelper;
 
 
 
@@ -72,27 +72,17 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
             return insets;
         });
 
+
+    /* Instantiating lines */
+
         dbHelper = new MyDatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         sda = new SessionDataAccess(db);
         eda = new ExerciseDataAccess(db);
 
-        editDialogHelper = new EditDialogHelper(this, null, eda, sda, (res) -> handleDialogHelperUpdate(res));
-
-        newEntryBtn = findViewById(R.id.newEntryBtn);
-
-        tabLayout = findViewById(R.id.tabLayout);
-//        listView = findViewById(R.id.listViewElem);
-        calendarView = findViewById(R.id.calendarView);
-        exerciseRecyclerView = findViewById(R.id.exerciseRecyclerView);
-        sessionListRecyclerView = findViewById(R.id.sessionListRecyclerView);
-        dateTextView = findViewById(R.id.dateTextView);
-
         TextView welcomeView = findViewById(R.id.welcomeTxt);
-        welcomeView.setText("Welcome (MainActivity)");
-
-        List<Session> sessions = sda.getSessions();
-
+        tabLayout = findViewById(R.id.tabLayout);
+        calendarView = findViewById(R.id.calendarView);
         calendarHelper = new CalendarHelper(
                 calendarView,
                 dateTextView,
@@ -100,16 +90,20 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
                 sessionListRecyclerView,
                 this::showSessionOptionsPopup,
                 this);
-        calendarHelper.setSelectedDay(CalendarDay.today());
-        calendarHelper.refresh();
+        sessionListRecyclerView = findViewById(R.id.sessionListRecyclerView);
+        exerciseRecyclerView = findViewById(R.id.exerciseRecyclerView);
+        dateTextView = findViewById(R.id.dateTextView);
+        newEntryBtn = findViewById(R.id.newEntryBtn);
+        editDialogHelper = new EditDialogHelper(this, null, eda, sda, (res) -> handleDialogHelperUpdate(res));
 
-        calendarView.setOnDateChangedListener(((widget, date, selected) -> {
-            calendarHelper.setSelectedDay(date);
-            calendarHelper.refresh();
-        }));
+        welcomeView.setText("Welcome (MainActivity)");
+
+        List<Session> sessions = sda.getSessions();
+
+
+    /* Tab Layout */
 
         tabLayout.selectTab(tabLayout.getTabAt(0));
-//        listView.setVisibility(View.VISIBLE);
         calendarView.setVisibility(View.VISIBLE);
         dateTextView.setVisibility(View.VISIBLE);
         sessionListRecyclerView.setVisibility(View.VISIBLE);
@@ -120,14 +114,12 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
             public void onTabSelected(TabLayout.Tab tab) {
                 int position = tab.getPosition();
                 if (position == 0){
-//                    listView.setVisibility(View.VISIBLE);
                     calendarView.setVisibility(View.VISIBLE);
                     dateTextView.setVisibility(View.VISIBLE);
                     sessionListRecyclerView.setVisibility(View.VISIBLE);
                     exerciseRecyclerView.setVisibility(View.GONE);
                     calendarHelper.loadSessionRecycler(sessions, calendarHelper.getSelectedDay());
                 } else if (position == 1) {
-//                    listView.setVisibility(View.GONE);
                     calendarView.setVisibility(View.GONE);
                     dateTextView.setVisibility(View.GONE);
                     sessionListRecyclerView.setVisibility(View.GONE);
@@ -135,27 +127,38 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
                     loadExerciseRecycler();
                 }
             }
-
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {}
-
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
         });
 
 
-        newEntryBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = tabLayout.getSelectedTabPosition();
-                if(position == 0){
-                    editDialogHelper.showEditDialogSession(calendarHelper);
-                }else if(position == 1){
-                    editDialogHelper.showEditDialogExercise();
-                }
+    /* Calendar */
+
+        calendarHelper.setSelectedDay(CalendarDay.today());
+        calendarHelper.refresh();
+
+        calendarView.setOnDateChangedListener(((widget, date, selected) -> {
+            calendarHelper.setSelectedDay(date);
+            calendarHelper.refresh();
+        }));
+
+
+    /* Floating "+" button */
+
+        newEntryBtn.setOnClickListener(v -> {
+            int position = tabLayout.getSelectedTabPosition();
+            if(position == 0){
+                editDialogHelper.showEditDialogSession(calendarHelper);
+            }else if(position == 1){
+                editDialogHelper.showEditDialogExercise();
             }
         });
     }
+
+
+/* Helper methods */
 
     @Override
     public void showSessionOptionsPopup(View anchor, Session session) {
