@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
     private RecyclerView exerciseRecyclerView;
     private ExerciseAdapter exerciseAdapter;
     private RecyclerView sessionListRecyclerView;
-    private SessionAdapter sessionAdapter;
     private MaterialCalendarView calendarView;
     private CalendarHelper calendarHelper;
     private TextView dateTextView;

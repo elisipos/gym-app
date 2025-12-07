@@ -36,7 +36,6 @@ public class CalendarHelper {
     SessionDecorator sessionDecorator;
     CurrentDayDecorator currentDayDecorator;
 
-    CalendarDay today = CalendarDay.today();
     public AtomicReference<CalendarDay> selectedDay = new AtomicReference<>();
     SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM d, yyyy");
 
@@ -115,11 +114,8 @@ public class CalendarHelper {
         sessionAdapter = new SessionAdapter(context, daySpecificSessions);
         sessionListRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        sessionAdapter.setSessionLongClickListener(new SessionAdapter.OnSessionLongClickListener() {
-            @Override
-            public void onSessionLongClick(long sessionId, View view) {
-                callback.showSessionOptionsPopup(view, sda.getSessionById(sessionId));
-            }
+        sessionAdapter.setSessionLongClickListener((long sessionId, View view) -> {
+            callback.showSessionOptionsPopup(view, sda.getSessionById(sessionId));
         });
 
         sessionListRecyclerView.setAdapter(sessionAdapter);
