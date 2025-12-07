@@ -1,17 +1,14 @@
 package com.example.gymapp.helpers;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
 import com.example.gymapp.ExerciseDataAccess;
@@ -21,10 +18,8 @@ import com.example.gymapp.SessionExerciseDataAccess;
 import com.example.gymapp.models.Exercise;
 import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
-import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -158,17 +153,12 @@ public class EditDialogHelper {
 
         ls.refreshLayout(split);
 
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                split[0] = !split[0];
-                ls.refreshLayout(split);
-            }
+        checkBox.setOnClickListener(v -> {
+            split[0] = !split[0];
+            ls.refreshLayout(split);
         });
 
-        /*                  */
-        /* INPUT VALIDATION */
-        /*                  */
+        /* Input Validation */
 
         positiveButton.setOnClickListener(v -> {
             String inputRepsPrimaryStr = inputRepsPrimary.getText().toString();
@@ -176,23 +166,17 @@ public class EditDialogHelper {
             String inputWeightStr = inputWeight.getText().toString();
 
             boolean hasError = false;
-
             if(!validateStringInput(inputRepsPrimaryStr) || Integer.parseInt(inputRepsPrimaryStr) == 0){
-                //FAIL
                 inputRepsPrimary.setError("Reps cannot be 0 or empty.");
                 hasError = true;
             }
-
             if(split[0]){
                 if(!validateStringInput(inputRepsSecondaryStr) || Integer.parseInt(inputRepsSecondaryStr) == 0){
-                    //FAIL
                     inputRepsSecondary.setError("Reps cannot be 0 or empty");
                     hasError = true;
                 }
             }
-
             if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
-                //FAIL
                 inputWeight.setError("Weight cannot be <= 0 or empty.");
                 hasError = true;
             }
@@ -213,9 +197,7 @@ public class EditDialogHelper {
                             newWeight
                     );
                     seda.updateSessionExercise(update);
-
                 } else {
-
                     SessionExercise update = new SessionExercise(
                             se.getId(),
                             se.getSessionId(),
@@ -225,7 +207,6 @@ public class EditDialogHelper {
                             newWeight
                     );
                     seda.updateSessionExercise(update);
-
                 }
 
                 if(split[0] != e.getSplit()){
@@ -235,12 +216,10 @@ public class EditDialogHelper {
                             split[0]
                     );
                     eda.updateExercise(update);
-
                 }
                 dialog.dismiss();
                 listener.onExerciseUpdated(false);
             }
-
         });
     }
 
@@ -259,9 +238,7 @@ public class EditDialogHelper {
 
         EditText inputName = dialogView.findViewById(R.id.inputExerciseName);
         CheckBox checkBox = dialogView.findViewById(R.id.checkBox);
-        TextView repsPrimaryTextView = dialogView.findViewById(R.id.txtViewRepsPrimary);
         EditText inputRepsPrimary = dialogView.findViewById(R.id.inputRepsPrimary);
-        TextView repsSecondaryTextView = dialogView.findViewById(R.id.txtViewRepsSecondary);
         EditText inputRepsSecondary = dialogView.findViewById(R.id.inputRepsSecondary);
         EditText inputWeight = dialogView.findViewById(R.id.inputWeight);
 
@@ -270,22 +247,16 @@ public class EditDialogHelper {
         Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
 
         LayoutSetter ls = new LayoutSetter(dialogView);
-
         final boolean[] split = {e.getSplit()};
-
         ls.refreshLayout(split);
 
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                split[0] = !split[0];
-                ls.refreshLayout(split);
-            }
+        checkBox.setOnClickListener(v -> {
+            split[0] = !split[0];
+            ls.refreshLayout(split);
         });
 
-        /*                  */
-        /* INPUT VALIDATION */
-        /*                  */
+
+        /* Input Validation */
 
         positiveButton.setOnClickListener(v -> {
             String inputRepsPrimaryStr = inputRepsPrimary.getText().toString();
@@ -293,23 +264,17 @@ public class EditDialogHelper {
             String inputWeightStr = inputWeight.getText().toString();
 
             boolean hasError = false;
-
             if(!validateStringInput(inputRepsPrimaryStr) || Integer.parseInt(inputRepsPrimaryStr) == 0){
-                //FAIL
                 inputRepsPrimary.setError("Reps cannot be 0 or empty.");
                 hasError = true;
             }
-
             if(split[0]){
                 if(!validateStringInput(inputRepsSecondaryStr) || Integer.parseInt(inputRepsSecondaryStr) == 0){
-                    //FAIL
                     inputRepsSecondary.setError("Reps cannot be 0 or empty.");
                     hasError = true;
                 }
             }
-
             if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
-                //FAIL
                 inputWeight.setError("Weight cannot be <= 0 or empty.");
                 hasError = true;
             }
@@ -366,15 +331,7 @@ public class EditDialogHelper {
         sessionNameInput.setText(s.getName());
 
         AtomicLong sessionDate = new AtomicLong();
-
         sessionDate.set(s.getDate());
-
-//        sessionDateInput.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                showCalendarView(sessionDate, sdf, sessionDateInput);
-//            }
-//        });
 
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(dialogNewSessionView)
@@ -383,26 +340,20 @@ public class EditDialogHelper {
                 .setNegativeButton("Cancel", (d, i) -> d.dismiss())
                 .create();
 
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String sessionName = sessionNameInput.getText().toString();
+        dialog.setOnShowListener(di -> {
+            Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+            button.setOnClickListener(v -> {
+                String sessionName = sessionNameInput.getText().toString();
 
-                        if(!validateStringInput(sessionName)){
-                            sessionNameInput.setError("Name cannot be empty");
-                        }else{
-                            Session update = new Session(s.getId(), sessionDate.get(), sessionName);
-                            sda.updateSession(update);
-                            dialog.dismiss();
-                            listener.onExerciseUpdated(false);
-                        }
-                    }
-                });
-            }
+                if(!validateStringInput(sessionName)){
+                    sessionNameInput.setError("Name cannot be empty");
+                }else{
+                    Session update = new Session(s.getId(), sessionDate.get(), sessionName);
+                    sda.updateSession(update);
+                    dialog.dismiss();
+                    listener.onExerciseUpdated(false);
+                }
+            });
         });
 
         dialog.show();
@@ -435,17 +386,12 @@ public class EditDialogHelper {
         boolean[] split = {false};
         ls.refreshLayout(split);
 
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                split[0] = !split[0];
-                ls.refreshLayout(split);
-            }
+        checkBox.setOnClickListener(v -> {
+            split[0] = !split[0];
+            ls.refreshLayout(split);
         });
 
-        /*                  */
-        /* INPUT VALIDATION */
-        /*                  */
+        /* Input Validation */
 
         positiveButton.setOnClickListener(v -> {
             String inputNameStr = inputName.getText().toString();
@@ -454,29 +400,21 @@ public class EditDialogHelper {
             String inputWeightStr = inputWeight.getText().toString();
 
             boolean hasError = false;
-
             if(!validateStringInput(inputNameStr)){
-                //FAIL
                 inputName.setError("Name cannot be empty or blank.");
                 hasError = true;
             }
-
             if(!validateStringInput(inputRepsPrimaryStr) || Integer.parseInt(inputRepsPrimaryStr) == 0){
-                //FAIL
                 inputRepsPrimary.setError("Reps cannot be 0 or empty.");
                 hasError = true;
             }
-
             if(split[0]){
                 if(!validateStringInput(inputRepsSecondaryStr) || Integer.parseInt(inputRepsSecondaryStr) == 0){
-                    //FAIL
                     inputRepsSecondary.setError("Reps cannot be 0 or empty.");
                     hasError = true;
                 }
             }
-
             if(!validateStringInput(inputWeightStr) || Double.parseDouble(inputWeightStr) <= 0){
-                //FAIL
                 inputWeight.setError("Weight cannot be <= 0 or empty.");
                 hasError = true;
             }
@@ -535,11 +473,8 @@ public class EditDialogHelper {
 
         checkBox.setChecked(split[0]);
 
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                split[0] = !split[0];
-            }
+        checkBox.setOnClickListener(v -> {
+            split[0] = !split[0];
         });
 
         Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
@@ -564,20 +499,11 @@ public class EditDialogHelper {
         EditText sessionNameInput = dialogView.findViewById(R.id.inputSessionName);
         EditText sessionDateInput = dialogView.findViewById(R.id.inputSessionDate);
 
-//        long nowMillis = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
-//        String todayFormatted = sdf.format(new Date(nowMillis));
         String selectedDayFormatted = sdf.format( helper.getSelectedDay().getDate() );
         sessionDateInput.setText(selectedDayFormatted);
 
         AtomicLong sessionDate = new AtomicLong(new Date().getTime());
-
-//        sessionDateInput.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                showCalendarView(sessionDate, sdf, sessionDateInput);
-//            }
-//        });
 
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(dialogView)
@@ -585,25 +511,19 @@ public class EditDialogHelper {
                 .setNegativeButton("Cancel", (d, i) -> d.dismiss())
         .create();
 
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String sessionName = sessionNameInput.getText().toString();
+        dialog.setOnShowListener(di -> {
+            Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+            button.setOnClickListener(v -> {
+                String sessionName = sessionNameInput.getText().toString();
 
-                        if(!validateStringInput(sessionName)){
-                            sessionNameInput.setError("Name cannot be empty.");
-                        }else{
-                            sda.addSession(Long.parseLong(String.valueOf(sessionDate)), sessionName);
-                            dialog.dismiss();
-                            listener.onExerciseUpdated(false);
-                        }
-                    }
-                });
-            }
+                if(!validateStringInput(sessionName)){
+                    sessionNameInput.setError("Name cannot be empty.");
+                }else{
+                    sda.addSession(Long.parseLong(String.valueOf(sessionDate)), sessionName);
+                    dialog.dismiss();
+                    listener.onExerciseUpdated(false);
+                }
+            });
         });
 
         dialog.show();
@@ -623,66 +543,32 @@ public class EditDialogHelper {
 
         boolean[] split = {false};
 
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                split[0] = !split[0];
-            }
+        checkBox.setOnClickListener(v -> {
+            split[0] = !split[0];
         });
 
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String exerciseName = String.valueOf(exerciseNameInput.getText());
+        dialog.setOnShowListener(di -> {
+            Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+            button.setOnClickListener(v -> {
+                String exerciseName = String.valueOf(exerciseNameInput.getText());
 
-                        if(!validateStringInput(exerciseName)){
-                            //FAIL
-                            exerciseNameInput.setError("Name cannot be empty.");
-                        }else{
-                            eda.addExercise(exerciseName, split[0]);
-                            dialog.dismiss();
-                            listener.onExerciseUpdated(true);
-                        }
-                    }
-                });
-            }
+                if(!validateStringInput(exerciseName)){
+                    //FAIL
+                    exerciseNameInput.setError("Name cannot be empty.");
+                }else{
+                    eda.addExercise(exerciseName, split[0]);
+                    dialog.dismiss();
+                    listener.onExerciseUpdated(true);
+                }
+            });
         });
         dialog.show();
     }
+
     private boolean validateStringInput(String input) {
         if(input.isEmpty()){
             return false;
         }else return !input.isBlank();
-    }
-
-    private void showCalendarView(AtomicLong sessionDate, SimpleDateFormat sdf, EditText sessionDateInput) {
-        View dialogCalendarView = inflater.inflate(R.layout.dialog_calendar, null);
-        final CalendarView calendar = dialogCalendarView.findViewById(R.id.calendarView);
-
-        calendar.setDate(sessionDate.get(), false, true);
-
-        calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                Calendar cal = Calendar.getInstance();
-                cal.set(year, month, dayOfMonth, 0, 0, 0);
-                cal.set(Calendar.MILLISECOND, 0);
-                sessionDate.set(cal.getTimeInMillis());
-            }
-        });
-
-        AlertDialog dialog = new AlertDialog.Builder(context)
-                .setView(dialogCalendarView)
-                .setPositiveButton("OK", (d, i) -> {
-                    sessionDateInput.setText(sdf.format(new Date(sessionDate.get())));
-                })
-                .setNegativeButton("Cancel", (d, i) -> d.dismiss())
-                .create();
-        dialog.show();
     }
 
 }
