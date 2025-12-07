@@ -83,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
         TextView welcomeView = findViewById(R.id.welcomeTxt);
         tabLayout = findViewById(R.id.tabLayout);
         calendarView = findViewById(R.id.calendarView);
+        sessionListRecyclerView = findViewById(R.id.sessionListRecyclerView);
+        dateTextView = findViewById(R.id.dateTextView);
         calendarHelper = new CalendarHelper(
                 calendarView,
                 dateTextView,
@@ -90,9 +92,7 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
                 sessionListRecyclerView,
                 this::showSessionOptionsPopup,
                 this);
-        sessionListRecyclerView = findViewById(R.id.sessionListRecyclerView);
         exerciseRecyclerView = findViewById(R.id.exerciseRecyclerView);
-        dateTextView = findViewById(R.id.dateTextView);
         newEntryBtn = findViewById(R.id.newEntryBtn);
         editDialogHelper = new EditDialogHelper(this, null, eda, sda, (res) -> handleDialogHelperUpdate(res));
 
