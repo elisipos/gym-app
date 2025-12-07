@@ -24,7 +24,6 @@ public class ExerciseDetailsActivity extends AppCompatActivity {
     private MyDatabaseHelper dbHelper;
     private ExerciseDataAccess eda;
     private ExerciseAdapter adapter;
-    private long selectedExercise;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
