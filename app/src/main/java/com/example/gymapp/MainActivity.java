@@ -1,8 +1,13 @@
 package com.example.gymapp;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -47,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
     private SessionDataAccess sda;
     private ExerciseDataAccess eda;
 
+    private ImageButton settingsBtn;
     private TabLayout tabLayout;
     private RecyclerView exerciseRecyclerView;
     private ExerciseAdapter exerciseAdapter;
@@ -71,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
             return insets;
         });
 
+        SharedPreferences prefs = getSharedPreferences("UserSettings", MODE_PRIVATE);
+        int savedColor = prefs.getInt("background_color", Color.WHITE);
+
 
     /* Instantiating lines */
 
@@ -80,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
         eda = new ExerciseDataAccess(db);
 
         TextView welcomeView = findViewById(R.id.welcomeTxt);
+        ImageButton settingsBtn = findViewById(R.id.settingsButton);
         tabLayout = findViewById(R.id.tabLayout);
         calendarView = findViewById(R.id.calendarView);
         sessionListRecyclerView = findViewById(R.id.sessionListRecyclerView);
@@ -98,6 +108,14 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
         welcomeView.setText("Welcome (MainActivity)");
 
         List<Session> sessions = sda.getSessions();
+
+
+    /* Settings Button */
+
+        settingsBtn.setOnClickListener(v -> {
+            Intent i = new Intent(this, SettingsActivity.class);
+            startActivity(i);
+        });
 
 
     /* Tab Layout */
