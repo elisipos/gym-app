@@ -3,10 +3,13 @@ package com.example.gymapp.helpers;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -20,6 +23,7 @@ import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -320,7 +324,7 @@ public class EditDialogHelper {
 //      Ex: Editing session from Long Press Menu.
         View dialogNewSessionView = inflater.inflate(R.layout.dialog_new_session, null);
 
-        EditText sessionNameInput = dialogNewSessionView.findViewById(R.id.inputSessionName);
+        AutoCompleteTextView sessionNameInput = dialogNewSessionView.findViewById(R.id.autoCompleteTextView);
         EditText sessionDateInput = dialogNewSessionView.findViewById(R.id.inputSessionDate);
         TextView dialogTitle = dialogNewSessionView.findViewById(R.id.dialogTitle);
 
@@ -496,8 +500,9 @@ public class EditDialogHelper {
     public void showEditDialogSession(CalendarHelper helper) {
         View dialogView = inflater.inflate(R.layout.dialog_new_session, null);
 
-        EditText sessionNameInput = dialogView.findViewById(R.id.inputSessionName);
+        AutoCompleteTextView sessionNameInput = dialogView.findViewById(R.id.autoCompleteTextView);
         EditText sessionDateInput = dialogView.findViewById(R.id.inputSessionDate);
+//        AutoCompleteTextView acTV = dialogView.findViewById(R.id.autoCompleteTextView);
 
         SimpleDateFormat sdf = new SimpleDateFormat("M-d-yyyy", Locale.getDefault());
         String selectedDayFormatted = sdf.format( helper.getSelectedDay().getDate() );
@@ -524,6 +529,19 @@ public class EditDialogHelper {
                     listener.onExerciseUpdated(false);
                 }
             });
+        });
+
+        List<String> autocompleteList = new ArrayList<String>(List.of("Push", "Pull", "Legs"));
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.context, android.R.layout.simple_dropdown_item_1line, autocompleteList);
+
+        sessionNameInput.setThreshold(0);
+        sessionNameInput.setAdapter(adapter);
+
+        sessionNameInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                sessionNameInput.showDropDown();
+            }
         });
 
         dialog.show();
