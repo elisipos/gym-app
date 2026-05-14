@@ -32,6 +32,8 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -149,7 +151,11 @@ public class MainActivity extends AppCompatActivity implements CalendarCallback 
         newEntryBtn.setOnClickListener(v -> {
             int position = tabLayout.getSelectedTabPosition();
             if(position == 0){
-                editDialogHelper.showEditDialogSession(calendarHelper);
+                try {
+                    editDialogHelper.showEditDialogSession(calendarHelper);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }else if(position == 1){
                 editDialogHelper.showEditDialogExercise();
             }

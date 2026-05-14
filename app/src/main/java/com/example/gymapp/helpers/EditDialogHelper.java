@@ -22,6 +22,13 @@ import com.example.gymapp.models.Exercise;
 import com.example.gymapp.models.Session;
 import com.example.gymapp.models.SessionExercise;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -497,7 +504,7 @@ public class EditDialogHelper {
         });
     }
 
-    public void showEditDialogSession(CalendarHelper helper) {
+    public void showEditDialogSession(CalendarHelper helper) throws IOException {
         View dialogView = inflater.inflate(R.layout.dialog_new_session, null);
 
         AutoCompleteTextView sessionNameInput = dialogView.findViewById(R.id.autoCompleteTextView);
@@ -525,13 +532,42 @@ public class EditDialogHelper {
                     sessionNameInput.setError("Name cannot be empty.");
                 }else{
                     sda.addSession(Long.parseLong(String.valueOf(sessionDate)), sessionName);
+                    // Try to open the file called "autocompleteList" and append the sessionName to it.
+                    try (FileOutputStream fos = context.openFileOutput("autocompleteList", Context.MODE_APPEND)) {
+                        fos.write((sessionName + "\n").getBytes());
+                    } catch (IOException e){
+                        // Failed to add text to the file.
+                    }
                     dialog.dismiss();
                     listener.onExerciseUpdated(false);
                 }
             });
         });
 
-        List<String> autocompleteList = new ArrayList<String>(List.of("Push", "Pull", "Legs"));
+        List<String> autocompleteList = new ArrayList<>();
+        /* Open and read "autocompleteList" from the app's storage, read each saved name,
+        and put them into a String array. If "autocompleteList" doesn't exist, create
+        an empty file with that name. */
+        try(FileInputStream fis = context.openFileInput("autocompleteList")){
+            InputStreamReader inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
+            try(BufferedReader reader = new BufferedReader(inputStreamReader)) {
+                String line = reader.readLine();
+                while(line != null) {
+                    autocompleteList.add(line);
+                    line = reader.readLine();
+                }
+            } catch (IOException e) {
+                // Error occurred when opening raw file for reading.
+            }
+        } catch (IOException e) {
+            try (FileOutputStream fos = context.openFileOutput("autocompleteList", Context.MODE_PRIVATE)){
+
+            } catch (IOException ex){
+                // Failed to create empty file.
+            }
+        }
+
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.context, android.R.layout.simple_dropdown_item_1line, autocompleteList);
 
         sessionNameInput.setThreshold(0);
